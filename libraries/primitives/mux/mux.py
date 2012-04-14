@@ -40,8 +40,6 @@ def mux_wrapper(block_name,
    
 
    # prevent warnings when converting to hdl
-   select.driven   = "wire"
-   data_in.driven  = "wire"
    data_out.driven = "wire"
 
    return logic
@@ -71,7 +69,7 @@ def convert():
 
   select, data_in, data_out = [Signal(bool(0)) for i in range(3)]
 
-  toVerilog(mux_wrapper, block_name="mux1", select=select, data_in=data_in, data_out=data_out)
+  toVerilog(mux_wrapper, block_name="inst", select=select, data_in=data_in, data_out=data_out)
 
 
 if __name__ == "__main__":

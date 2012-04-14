@@ -1,9 +1,9 @@
 from myhdl import *
 import mux
 
-out = Signal(bool(0))
+out = Signal(intbv(0))
 
-inst = mux.mux_wrapper("mux_inst_0",3,1,intbv(12),out)
+inst = mux.mux_wrapper("mux_inst",select=intbv(1),data_in=intbv(10),data_out=out,DATA_WIDTH=32,SELECT_LINES=5)
 sim = Simulation(inst)
 sim.run(10)
 

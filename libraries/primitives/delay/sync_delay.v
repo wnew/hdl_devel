@@ -30,8 +30,8 @@ module sync_delay #(
       output data_valid
    );
 
-   //TODO: Set the size of count correctly
-   reg [DELAY_CYCLES-1:0] count;
+   // set the size of count to the max bit width required
+   reg [DELAY_CYCLES/2-1:0] count;
    reg [DATA_WIDTH-1:0] data_in;
    reg [DATA_WIDTH-1:0] data_out;
    
