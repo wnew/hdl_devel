@@ -36,17 +36,17 @@ module counter_tb;
    // instance, "(d)esign (u)nder (t)est"
    //=====================================
    counter #(
-       .ARCHITECTURE (`ifdef ARCHITECTURE `ARCHITECTURE `else "BEHAVIORAL" `endif),
-       .DATA_WIDTH   (`ifdef DATA_WIDTH   `DATA_WIDTH   `else 8            `endif),
-       .COUNT_FROM   (`ifdef COUNT_FROM   `COUNT_FROM   `else 0            `endif),
-       .COUNT_TO     (`ifdef COUNT_TO     `COUNT_TO     `else 255          `endif),
-       .STEP         (`ifdef STEP         `STEP         `else 1            `endif)
-    ) dut (
-		   .clk (clk), 
-		   .en  (en), 
-		   .rst (rst), 
-		   .out (out)
-		);
+      .ARCHITECTURE (`ifdef ARCHITECTURE `ARCHITECTURE `else "BEHAVIORAL" `endif),
+      .DATA_WIDTH   (`ifdef DATA_WIDTH   `DATA_WIDTH   `else 8            `endif),
+      .COUNT_FROM   (`ifdef COUNT_FROM   `COUNT_FROM   `else 0            `endif),
+      .COUNT_TO     (`ifdef COUNT_TO     `COUNT_TO     `else 255          `endif),
+      .STEP         (`ifdef STEP         `STEP         `else 1            `endif)
+   ) dut (
+      .clk (clk), 
+      .en  (en), 
+      .rst (rst), 
+      .out (out)
+   );
 
 //==============
 // MyHDL ports
@@ -75,7 +75,7 @@ module counter_tb;
    //====================
    always #1
    begin
-	    clk = ~clk;
+      clk = ~clk;
    end
 
    //===============
