@@ -47,14 +47,14 @@ module counter #(
             begin
                if (rst == 0 && out <= COUNT_TO)
                begin
-     	            if (en == 1)
+                  if (en == 1)
                   begin
-     	               out <= out + STEP;
-     	            end
-     	         end
+                     out <= out + STEP;
+                  end
+               end
                else
                begin
-     	            out <= COUNT_FROM;
+                  out <= COUNT_FROM;
                end // else: if(rst != 0)
             end
          end // case "BEHAVIORAL"
