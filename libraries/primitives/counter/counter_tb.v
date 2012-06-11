@@ -39,7 +39,7 @@ module counter_tb;
       .ARCHITECTURE (`ifdef ARCHITECTURE `ARCHITECTURE `else "BEHAVIORAL" `endif),
       .DATA_WIDTH   (`ifdef DATA_WIDTH   `DATA_WIDTH   `else 8            `endif),
       .COUNT_FROM   (`ifdef COUNT_FROM   `COUNT_FROM   `else 0            `endif),
-      .COUNT_TO     (`ifdef COUNT_TO     `COUNT_TO     `else 255          `endif),
+      .COUNT_TO     (`ifdef COUNT_TO     `COUNT_TO     `else 10           `endif),
       .STEP         (`ifdef STEP         `STEP         `else 1            `endif)
    ) dut (
       .clk (clk), 
@@ -66,7 +66,7 @@ module counter_tb;
    initial
    begin
       clk = 0;
-      en = 1;
+      en  = 1;
       rst = 0;
    end
 
@@ -86,7 +86,7 @@ module counter_tb;
    //===============================
    // finish after 100 clock cycles
    //===============================
-   initial #200 $finish;
+   initial #100 $finish;
 
 `endif
    
