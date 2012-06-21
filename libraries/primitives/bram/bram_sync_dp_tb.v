@@ -18,14 +18,15 @@ module bram_sync_dp_tb;
    //===================
    // local parameters
    //===================
-   localparam LOCAL_DATA_WIDTH = 2;
+   localparam LOCAL_DATA_WIDTH = 8;
    localparam LOCAL_ADDR_WIDTH = 4;
-   localparam LOCAL_DATA_DEPTH = 2**LOCAL_ADDR_WIDTH;
 
    //=============
    // local regs
    //=============
    reg                        clk;
+   reg                        rst;
+   reg                        en;
    reg                        a_wr;
    reg [LOCAL_ADDR_WIDTH-1:0] a_addr;
    reg [LOCAL_DATA_WIDTH-1:0] a_data_in;
@@ -40,14 +41,16 @@ module bram_sync_dp_tb;
    wire [LOCAL_DATA_WIDTH-1:0] b_data_out;
 
    
-   //=====================================
+   //======================================
    // instance, "(d)esign (u)nder (t)est"
-   //=====================================
+   //======================================
    bram_sync_dp #(
-      .DATA_WIDTH (`ifdef DATA_WIDTH `DATA_WIDTH `else 2 `endif),
-      
-      .DATA_DEPTH (`ifdef DATA_DEPTH `DATA_DEPTH `else 2 `endif)
+      .DATA_WIDTH (`ifdef DATA_WIDTH `DATA_WIDTH `else LOCAL_DATA_WIDTH `endif),
+      .ADDR_WIDTH (`ifdef ADDR_WIDTH `ADDR_WIDTH `else LOCAL_ADDR_WIDTH `endif)
    ) dut (
+
+      .rst        (rst),
+      .en         (en),
 
       .a_clk      (clk),
       .a_wr       (a_wr),
@@ -80,16 +83,21 @@ module bram_sync_dp_tb;
    initial
       begin
          $dumpvars;
-         clk = 0;
-         a_addr = 4'b0110; 
+         clk    = 0;
+         rst    = 0;
+         en     = 1;
+         a_addr = 4'b0010; 
          a_data_in = 32'b1010101010101;
          a_wr = 1;
-         
-         #5 a_wr = 0;
-
-         #10 b_wr = 0;
-         #10 b_addr = 4'b0110;
-
+         #5 
+         a_addr = 4'b0010;
+         a_data_in = 32'b0101010101010;
+         #5 
+         a_addr = 4'b0001;
+         a_data_in = 32'b0101010111010;
+         #5 
+         a_addr = 6;
+         a_data_in = 32'b0101010111010;
       end
 
    //=====================
@@ -104,13 +112,13 @@ module bram_sync_dp_tb;
    // print output
    //===============
    always
-      #1 $display(b_data_out);
+      #1 $display(a_data_out);
 
    //===================
    // finish condition 
    //===================
    // 2 time units = 1 clock cycle
-   initial #100 $finish;
+   initial #30 $finish;
 
 `endif
 

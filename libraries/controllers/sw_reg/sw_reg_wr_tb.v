@@ -41,7 +41,7 @@ module sw_reg_wr_tb;
       .C_BASEADDR (32'h00000000),
       .C_HIGHADDR (32'h0000FFFF)
    ) dut (
-      
+      .wb_clk_i   (wb_clk_i),
       .wb_rst_i   (wb_rst_i),
       .wb_cyc_i   (wb_cyc_i),
       .wb_stb_i   (wb_stb_i),
@@ -76,9 +76,11 @@ module sw_reg_wr_tb;
    initial
       begin
          $dumpvars;
+         fabric_clk = 0;
 
          wb_clk_i = 0;
-         wb_sel_i = 4'hE;
+         wb_rst_i = 0;
+         wb_sel_i = 4'hF;
          wb_stb_i = 1;
          wb_cyc_i = 1;
          wb_we_i  = 1;
@@ -92,19 +94,33 @@ module sw_reg_wr_tb;
       
          #5
          
+         wb_dat_i = 32'hFFFFEEEE;
          wb_adr_i = 32'h00000000;
          wb_stb_i = 1;
          wb_cyc_i = 1;
-         wb_we_i = 0;
          
-         #20 $finish;
+         #5 
+         
+         wb_stb_i = 0;
+         wb_cyc_i = 0;
+      
+         #5
+         
+         wb_adr_i = 32'h00000000;
+         wb_stb_i = 1;
+         wb_cyc_i = 1;
+         
+         #5 $finish;
       end
 
    //=====================
    // Simulate the Clock
    //=====================
    always #1
-      wb_clk_i = ~wb_clk_i;
+   begin
+      wb_clk_i   = ~wb_clk_i;
+      fabric_clk = ~fabric_clk;
+   end
 
 `endif
 

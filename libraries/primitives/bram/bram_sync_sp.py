@@ -18,6 +18,8 @@ def bram_sync_sp_wrapper(block_name,
       # Ports
       #========
       clk,
+      rst,
+      en,
       wr,
       addr,
       data_in,
@@ -36,14 +38,9 @@ def bram_sync_sp_wrapper(block_name,
    #===================
    @always(clk.posedge)
    def logic():
-      if (rst == 0 and out < COUNT_TO):
-         if (en == 1):
-            out == out + STEP
-      else:
-         out = COUNT_FROM
-
+      pass
    # removes warning when converting to hdl
-   out.driven = "wire"
+   data_out.driven = "wire"
 
    return logic
 
@@ -60,6 +57,8 @@ bram_sync_sp
    .ADDR_WIDTH   ($ADDR_WIDTH)
 ) bram_sync_sp_$block_name (
    .clk      ($clk),
+   .rst      ($rst),
+   .en       ($en),
    .wr       ($wr),
    .addr     ($addr),
    .data_in  ($data_in),
@@ -73,9 +72,9 @@ bram_sync_sp
 #=======================================
 def convert():
 
-   clk, wr, addr, data_in, data_out = [Signal(bool(0)) for i in range(5)]
+   clk, rst, en, wr, addr, data_in, data_out = [Signal(bool(0)) for i in range(7)]
 
-   toVerilog(bram_sync_sp_wrapper, block_name="inst", clk=clk, wr=wr, addr=addr, data_in=data_in, data_out=data_out)
+   toVerilog(bram_sync_sp_wrapper, block_name="inst", clk=clk, rst=rst, en=en, wr=wr, addr=addr, data_in=data_in, data_out=data_out)
 
 
 if __name__ == "__main__":

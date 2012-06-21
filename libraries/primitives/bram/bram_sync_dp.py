@@ -17,6 +17,8 @@ def bram_sync_dp_wrapper(block_name,
       #========
       # Ports
       #========
+      rst,
+      en,
       a_clk,
       a_wr,
       a_addr,
@@ -66,11 +68,13 @@ bram_sync_dp
    .DATA_WIDTH   ($DATA_WIDTH),
    .ADDR_WIDTH   ($ADDR_WIDTH)
 ) bram_sync_dp_$block_name (
+   .rst        ($rst),
+   .en         ($en),
    .a_clk      ($a_clk),
    .a_wr       ($a_wr),
    .a_addr     ($a_addr),
    .a_data_in  ($a_data_in),
-   .a_data_out ($a_data_out)
+   .a_data_out ($a_data_out),
    .b_clk      ($b_clk),
    .b_wr       ($b_wr),
    .b_addr     ($b_addr),
@@ -85,9 +89,9 @@ bram_sync_dp
 #=======================================
 def convert():
 
-   a_clk, a_wr, a_addr, a_data_in, a_data_out, b_clk, b_wr, b_addr, b_data_in, b_data_out = [Signal(bool(0)) for i in range(10)]
+   en, rst, a_clk, a_wr, a_addr, a_data_in, a_data_out, b_clk, b_wr, b_addr, b_data_in, b_data_out = [Signal(bool(0)) for i in range(12)]
 
-   toVerilog(bram_sync_dp_wrapper, block_name="inst", a_clk=a_clk, a_wr=a_wr, a_addr=a_addr, a_data_in=a_data_in, a_data_out=a_data_out, b_clk=b_clk, b_wr=b_wr, b_addr=b_addr, b_data_in=b_data_in, b_data_out=b_data_out)
+   toVerilog(bram_sync_dp_wrapper, block_name="inst", en=en, rst=rst, a_clk=a_clk, a_wr=a_wr, a_addr=a_addr, a_data_in=a_data_in, a_data_out=a_data_out, b_clk=b_clk, b_wr=b_wr, b_addr=b_addr, b_data_in=b_data_in, b_data_out=b_data_out)
 
 
 if __name__ == "__main__":
