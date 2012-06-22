@@ -18,6 +18,7 @@ module decimator #(
       //=============
       parameter ARCHITECTURE       = "BEHAVIORAL",     // BEHAVIORAL, VIRTEX5, VIRTEX6
       parameter DATA_WIDTH         = 32,
+      parameter WHOLE_NUM_FACTOR   = 1,                // If the decimation factor is a whole number or not
       parameter DECI_DIV_FACTOR    = 8,
       parameter DECI_MULTI_FACTOR  = 1
    ) (
@@ -37,23 +38,6 @@ module decimator #(
       output reg [DATA_WIDTH-1:0] data_out
    );
 
-   wire [31:0] count;
-   
-   //=======================
-   // Counter Instatiation
-   //=======================
-   counter #(
-      .ARCHITECTURE ("BEHAVIORAL"),
-      .DATA_WIDTH   (32),
-      .COUNT_FROM   (0),
-      .COUNT_TO     (3),
-      .STEP         (1)
-   ) counter_inst (
-      .clk (clk1_i),
-      .en  (1),
-      .rst (0),
-      .out (count)
-   );
 
    //=======================================
    // Generate according to implementation
@@ -63,6 +47,24 @@ module decimator #(
 
          "BEHAVIORAL" :
          begin
+            wire [31:0] count;
+            
+            //=======================
+            // Counter Instatiation
+            //=======================
+            counter #(
+               .ARCHITECTURE ("BEHAVIORAL"),
+               .DATA_WIDTH   (32),
+               .COUNT_FROM   (0),
+               .COUNT_TO     (3),
+               .STEP         (1)
+            ) counter_inst (
+               .clk (clk1_i),
+               .en  (1),
+               .rst (0),
+               .out (count)
+            );
+
             always @(posedge clk1_i)
             begin
                if (count == 0)

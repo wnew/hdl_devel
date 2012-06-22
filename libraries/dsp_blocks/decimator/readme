@@ -1,0 +1,4 @@
+The decimator currently can decimate for whole number factors. The idea is to
+add the functionality to do fractional decimations at a later stage.
+
+The python wrapper needs to be written.

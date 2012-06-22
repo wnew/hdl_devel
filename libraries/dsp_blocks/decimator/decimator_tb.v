@@ -104,8 +104,8 @@ module decimator_tb;
    begin
       //$display(count);
       data_in = count;
-      $display(data_out);
-      $display(data_valid);
+      if (data_valid == 1)
+         $display(data_out);
    end
    
    //===============================

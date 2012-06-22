@@ -1,0 +1,4 @@
+This BRAM implementation take uses the dual port bram primitive and connects
+up the wishbone bus to one and lets the other be controlled by the fabric.
+
+The testing still need to be completed.
