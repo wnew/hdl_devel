@@ -1,0 +1,4 @@
+This directory contains the HDL peripheral controllers and the respective
+python wrappers enabling them to be included in the MyHDL based toolflow.
+A controller is any module that interfaces to the off-chip periferals either
+via a bus or diectly.
