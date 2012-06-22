@@ -15,29 +15,29 @@ module fifo #(
       //=======================
       //   fifo parameters
       //=======================
-      parameter DATA_WIDTH = 16;
-      parameter FIFO_DEPTH = 1024;
-      parameter ADDR_BITS  = 10;
+      parameter DATA_WIDTH = 16,
+      parameter FIFO_DEPTH = 1024,
+      parameter ADDR_BITS  = 10
    ) (
       //=======================
       //   input ports
       //=======================
-      input                  wr_clk;
-      input                  rd_clk;
-      input                  en;
-      input                  rst;
-      input                  wr_req;
-      input                  rd_req;
-      input [DATA_WIDTH-1:0] data_in;
+      input                  wr_clk,
+      input                  rd_clk,
+      input                  en,
+      input                  rst,
+      input wire             wr_req,
+      input                  rd_req,
+      input [DATA_WIDTH-1:0] data_in,
       
       //=======================
       //   output ports
       //=======================
-      output     [DATA_WIDTH-1:0] data_out;
-      output                      perc_full;
-      output                      full;
-      output                      empty;
-      output reg [ADDR_BITS-1:0]  usedw;
+      output     [DATA_WIDTH-1:0] data_out,
+      output                      perc_full,
+      output                      full,
+      output                      empty,
+      output reg [ADDR_BITS-1:0]  usedw
    );
 
    
@@ -64,7 +64,7 @@ module fifo #(
             mem[i] <= 0;
      end
    
-   always @(posedge wr_clk or posedge wr_reg)
+   always @(posedge wr_clk or posedge wr_req)
       if (wr_req)
          begin
             wr_ptr <= wr_ptr+1;

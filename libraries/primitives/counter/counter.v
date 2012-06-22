@@ -45,7 +45,9 @@ module counter #(
             // Synchronous logic
             always @(posedge clk)
             begin
-               if (rst == 0 && out < COUNT_TO)
+               // if ACTIVE_LOW_RST is defined then reset on a low
+               // this should be defined on a system-wide basis
+               if ((`ifdef ACTIVE_LOW_RST !rst `else rst `endif) && out < COUNT_TO)
                begin
                   if (en == 1)
                   begin

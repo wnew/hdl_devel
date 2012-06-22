@@ -23,6 +23,7 @@ module bit_reorder_tb;
    //=============
    // local regs
    //=============
+   reg                        en;
    reg [LOCAL_DATA_WIDTH-1:0] in;
    
    //==============
@@ -69,6 +70,7 @@ module bit_reorder_tb;
       .BIT30 (30),
       .BIT31 (31)  
    ) dut (
+      .en  (en),
       .in  (in), 
       .out (out)
    );
@@ -91,7 +93,8 @@ module bit_reorder_tb;
    initial
    begin
       $dumpvars;
-      in  = 32'b11110000111100001111000011110000;
+      en = 1;
+      in = 32'b11110000111100001111000011110000;
    end
 
    //===============

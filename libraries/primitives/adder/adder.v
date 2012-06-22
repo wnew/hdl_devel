@@ -3,7 +3,7 @@
 //      Parameterize adder                                                    //
 //                                                                            //
 //      Module name: adder                                                    //
-//      Desc: parameterized adder module                                      //
+//      Desc: parameterized asyncronous adder module                          //
 //      Date: Mar 2012                                                        //
 //      Developer: Kaushal Buch                                               //
 //      Licence: GNU General Public License ver 3                             //
@@ -17,14 +17,14 @@ module adder #(
       // Top level block parameters
       //=============================
       parameter ARCHITECTURE = "BEHAVIORAL", // BEHAVIORAL, VIRTEX5, VIRTEX6
-      parameter DATA_WIDTH_1  = 2,           // number of input bits (multiplier)
-      parameter DATA_WIDTH_2  = 2            // number of input bits (multiplicand)
+      parameter DATA_WIDTH_1 = 2,            // number of input bits (multiplier)
+      parameter DATA_WIDTH_2 = 2             // number of input bits (multiplicand)
    ) (
       //==============
       // Input Ports
       //==============
-      input wire [DATA_WIDTH_1-1:0]   data1_i,
-      input wire [DATA_WIDTH_2-1:0]   data2_i,
+      input wire [DATA_WIDTH_1-1:0] data1_i,
+      input wire [DATA_WIDTH_2-1:0] data2_i,
       //===============
       // Output Ports
       //===============

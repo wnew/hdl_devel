@@ -1,9 +1,9 @@
 //============================================================================//
 //                                                                            //
-//      Parameterize Bit Reorderer                                            //
+//      Parameterize Asyncronous Bit Reorderer                                //
 //                                                                            //
 //      Module name: bit_reorder                                              //
-//      Desc: Reordered a bit vector into any the order specified by          //
+//      Desc: Asyncronously reorder a bit vector into the order specified by  //
 //            the parameters                                                  //
 //      Date: June 2012                                                       //
 //      Developer: Wesley New                                                 //
@@ -54,12 +54,13 @@ module bit_reorder #(
       //===============
       // Input Ports
       //===============
+      input wire                  en,
       input wire [DATA_WIDTH-1:0] in,
       
       //===============
       // Output Ports
       //===============
-      output [DATA_WIDTH-1:0] out
+      output reg [DATA_WIDTH-1:0] out
    );
 
    //=======================================
@@ -71,7 +72,11 @@ module bit_reorder #(
          "BEHAVIORAL" : 
          begin
             // Asynchonous logic
-            assign out = {in[BIT31], in[BIT30], in[BIT29], in[BIT28], in[BIT27], in[BIT26], in[BIT25], in[BIT24], in[BIT23], in[BIT22], in[BIT21], in[BIT20], in[BIT19], in[BIT18], in[BIT17], in[BIT16], in[BIT15], in[BIT14], in[BIT13], in[BIT12], in[BIT11], in[BIT10], in[BIT9], in[BIT8], in[BIT7], in[BIT6], in[BIT5], in[BIT4], in[BIT3], in[BIT2], in[BIT1], in[BIT0]};
+            always@* begin
+               if (en) begin
+                  out <= {in[BIT31], in[BIT30], in[BIT29], in[BIT28], in[BIT27], in[BIT26], in[BIT25], in[BIT24], in[BIT23], in[BIT22], in[BIT21], in[BIT20], in[BIT19], in[BIT18], in[BIT17], in[BIT16], in[BIT15], in[BIT14], in[BIT13], in[BIT12], in[BIT11], in[BIT10], in[BIT9], in[BIT8], in[BIT7], in[BIT6], in[BIT5], in[BIT4], in[BIT3], in[BIT2], in[BIT1], in[BIT0]};
+               end
+            end
          end // case "BEHAVIORAL"
  
          "VIRTEX5" :
