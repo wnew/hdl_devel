@@ -17,8 +17,8 @@ module adder #(
       // Top level block parameters
       //=============================
       parameter ARCHITECTURE = "BEHAVIORAL", // BEHAVIORAL, VIRTEX5, VIRTEX6
-      parameter DATA_WIDTH_1 = 2,            // number of input bits (multiplier)
-      parameter DATA_WIDTH_2 = 2             // number of input bits (multiplicand)
+      parameter DATA_WIDTH_1 = 2,            // number of input bits for input 1 
+      parameter DATA_WIDTH_2 = 2             // number of input bits for input 2
    ) (
       //==============
       // Input Ports

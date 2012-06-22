@@ -72,7 +72,7 @@ module bit_reorder #(
          "BEHAVIORAL" : 
          begin
             // Asynchonous logic
-            always@* begin
+            always @* begin
                if (en) begin
                   out <= {in[BIT31], in[BIT30], in[BIT29], in[BIT28], in[BIT27], in[BIT26], in[BIT25], in[BIT24], in[BIT23], in[BIT22], in[BIT21], in[BIT20], in[BIT19], in[BIT18], in[BIT17], in[BIT16], in[BIT15], in[BIT14], in[BIT13], in[BIT12], in[BIT11], in[BIT10], in[BIT9], in[BIT8], in[BIT7], in[BIT6], in[BIT5], in[BIT4], in[BIT3], in[BIT2], in[BIT1], in[BIT0]};
                end

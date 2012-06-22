@@ -1,0 +1,54 @@
+The libraries are split up into 3 sections, the DSP modules, primitives and
+the controllers. 
+
+Primitives
+==========
+The primitives are any basic modules that cant be sub-divided any further. 
+For example, counters, adders, etc.
+
+Controllers
+=============
+Controller modules are anything that interfaces to off-chip peripherals, like
+gpios, dram, etc be it directly or via a bus. They can be built up using the 
+primitives or just native hdl.
+
+DSP (Digital Signal Processing) Modules
+=========================================
+The DSP library consists of any modules that performs a DSP function like FFTs,
+filters and the like. 
+
+
+
+Each module should consist of the following:
+
+1. The hdl implementation <module_name>.v
+   
+   This is a as parameterized as possible to provide flexibility to the 
+   designer. Each module has a behavioral implementation and a implementation
+   specific to different FPGA devices.
+
+2. The hdl testbench      <module_name_tb>.v
+   
+   The hdl testbench is a quick functional test of the module and not meant to
+   provide 100% test coverage. It instatiates the dut (device under test) and 
+   checks that the output if correct for a given input. A fuller test is
+   done in the python testbench. The hdl testbench provides "hooks" into the 
+   hdl module for the myhdl testbench to plug into.
+
+3. The myhdl wrapper      <module_name>.py
+   
+   The myhdl wrapper provides a means of getting access to the hdl module from
+   within the myhdl framework. It also provides a python model for simulation 
+   purposes. 
+
+4. The python testbench   <test_module_name>.py
+   
+   The python testbench hooks into the hdl via the hdl testbench, it should
+   provide complete test coverage of the modules functionality.
+
+5. The python init script __init__.py
+
+   The init file makes the python part of the package.
+
+
+
