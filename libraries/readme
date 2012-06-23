@@ -50,6 +50,10 @@ Each module should consist of the following:
 
    The init file makes the python part of the package.
 
+6. The readme file   readme
+
+  This file should give an overview of the module, describing the ports and 
+  parameters and how the module is implemented.
 
 Notes on creating a module:
 

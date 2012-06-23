@@ -26,7 +26,7 @@ module bram_wb_tb;
    reg         wbs_stb_i;
    reg         wbs_we_i;
    reg   [3:0] wbs_sel_i;
-   reg  [31:0] wbs_adr_i;
+   reg   [7:0] wbs_adr_i;
    reg  [31:0] wbs_dat_i;
    wire [31:0] wbs_dat_o;
    wire        wbs_ack_o;
@@ -34,9 +34,9 @@ module bram_wb_tb;
    reg         fabric_clk;
    reg         fabric_rst;
    reg         fabric_we;
-   reg         fabric_addr;
-   reg         fabric_data_in;
-   wire        fabric_data_out;
+   reg   [7:0] fabric_addr;
+   reg  [31:0] fabric_data_in;
+   wire [31:0] fabric_data_out;
 
    //=====================================
    // instance, "(d)esign (u)nder (t)est"
@@ -53,7 +53,7 @@ module bram_wb_tb;
       .fabric_we       (fabric_we),
       .fabric_addr     (fabric_addr),
       .fabric_data_in  (fabric_data_in),
-      .fabric_data_out (fabric_data_out)
+      .fabric_data_out (fabric_data_out),
       
       .wbs_clk_i   (wbs_clk_i),
       .wbs_rst_i   (wbs_rst_i),
@@ -63,7 +63,7 @@ module bram_wb_tb;
       .wbs_adr_i   (wbs_adr_i),
       .wbs_dat_i   (wbs_dat_i),
       .wbs_dat_o   (wbs_dat_o),
-      .wbs_ack_o   (wbs_ack_o),
+      .wbs_ack_o   (wbs_ack_o)
    );
 
 //==============
@@ -90,7 +90,7 @@ module bram_wb_tb;
          wbs_stb_i = 1;
          wbs_cyc_i = 1;
          wbs_we_i  = 1;
-         wbs_adr_i = 32'h00000000;
+         wbs_adr_i = 8'h00;
          wbs_dat_i = 32'hEEEEEEEE;
 
          #5 
@@ -100,10 +100,10 @@ module bram_wb_tb;
       
          #5
          
-         wbs_adr_i = 32'h00000000;
+         wbs_adr_i = 8'h01;
          wbs_stb_i = 1;
          wbs_cyc_i = 1;
-         wbs_we_i = 0;
+         wbs_we_i  = 0;
          
          
          #20 $finish;
