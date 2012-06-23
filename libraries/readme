@@ -51,4 +51,20 @@ Each module should consist of the following:
    The init file makes the python part of the package.
 
 
+Notes on creating a module:
 
+1. Is the data_width parameterized?
+2. What else can be parameterized? Should it be?
+3. Is it async or sync, do we need to provide both?
+4. Does it need a reset and an enable. If reset, then use ifdef ACTIVE_LOW_RST.
+5. Is the ARCHITECTURE parameterized? 
+6. 
+
+
+
+
+Layout:
+1. Are the tabs spacings correct?
+2. Are all begin and ends in the correct places?
+3. Are all the comment there?
+4. 
