@@ -1,43 +1,32 @@
-module wb_katadccontroller
+module wb_katadccontroller(
+
     input         wb_clk_i,
     input         wb_rst_i,
-    
-    output [0:31] Sl_DBus,
-    output        wb_data_o,
-    
-    output        Sl_errAck,
-    output        Sl_retry,
-    output        Sl_toutSup,
-    output        Sl_xferAck,
-    
-    input  [0:31] OPB_ABus,
-    input         wb_adr_i,
-
+    input         wb_we_i,
+    input         wb_cyc_i,
+    input         wb_stb_i,
     input  [0:3]  wb_sel_i,
-    
-    input  [0:31] OPB_DBus,
-    input         wb_data_i,
-    
-    input         OPB_RNW,
-    input         OPB_select,
-    //input         OPB_seqAddr,
+    input  [0:31] wb_adr_i,
+    input  [0:31] wb_data_i,
+    output [0:31] wb_data_o,
+    output        wb_ack_o,
 
-	  output        adc0_adc3wire_clk,
-	  output        adc0_adc3wire_data,
-	  output        adc0_adc3wire_strobe,
-	  output        adc0_adc_reset,
-	  output        adc0_mmcm_reset,
+    output        adc0_adc3wire_clk,
+    output        adc0_adc3wire_data,
+    output        adc0_adc3wire_strobe,
+    output        adc0_adc_reset,
+    output        adc0_mmcm_reset,
     output        adc0_psclk,
     output        adc0_psen,
     output        adc0_psincdec,
     input         adc0_psdone,
     input         adc0_clk,
 
-	  output        adc1_adc3wire_clk,
-	  output        adc1_adc3wire_data,
-	  output        adc1_adc3wire_strobe,
-	  output        adc1_adc_reset,
-	  output        adc1_mmcm_reset,
+    output        adc1_adc3wire_clk,
+    output        adc1_adc3wire_data,
+    output        adc1_adc3wire_strobe,
+    output        adc1_adc_reset,
+    output        adc1_mmcm_reset,
     output        adc1_psclk,
     output        adc1_psen,
     output        adc1_psincdec,
@@ -71,12 +60,12 @@ module wb_katadccontroller
   wire        adc0_reset;
   wire        adc1_reset;
 
-  /************ OPB Logic ***************/
+  /************ Bus Logic ***************/
 
-  wire addr_match = OPB_ABus >= C_BASEADDR && OPB_ABus <= C_HIGHADDR;
-  wire [31:0] opb_addr = OPB_ABus - C_BASEADDR;
+  wire addr_match = wb_adr_i >= C_BASEADDR && wb_adr_i <= C_HIGHADDR;
+  wire [31:0] wb_addr = wb_adr_i - C_BASEADDR;
 
-  reg opb_ack;
+  reg wb_ack;
 
   /*** Registers ****/
 
@@ -113,7 +102,7 @@ module wb_katadccontroller
 
 
   always @(posedge wb_clk_i) begin
-    opb_ack <= 1'b0;
+    wb_ack <= 1'b0;
     
     adc0_reset_reg <= 1'b0;
     adc1_reset_reg <= 1'b0;
@@ -126,48 +115,48 @@ module wb_katadccontroller
 
     if (wb_rst_i) begin
     end else begin
-      if (addr_match && OPB_select && !opb_ack) begin
-        opb_ack <= 1'b1;
-        if (!OPB_RNW) begin
-          case (opb_addr[3:2])
+      if (addr_match && !wb_ack) begin
+        wb_ack <= 1'b1;
+        if (wb_we_i && wb_stb_i && wb_cyc_i) begin
+          case (wb_addr[3:2])
             0:  begin
               if (wb_sel_i[3]) begin
-                adc0_reset_reg <= OPB_DBus[31];
-                adc1_reset_reg <= OPB_DBus[30];
+                adc0_reset_reg <= wb_data_i[31];
+                adc1_reset_reg <= wb_data_i[30];
               end
               if (wb_sel_i[1]) begin
-                adc0_mmcm_psen_reg <= OPB_DBus[15];
-                adc1_mmcm_psen_reg <= OPB_DBus[11];
-                adc0_mmcm_psincdec_reg <= OPB_DBus[14];
-                adc1_mmcm_psincdec_reg <= OPB_DBus[10];
+                adc0_mmcm_psen_reg <= wb_data_i[15];
+                adc1_mmcm_psen_reg <= wb_data_i[11];
+                adc0_mmcm_psincdec_reg <= wb_data_i[14];
+                adc1_mmcm_psincdec_reg <= wb_data_i[10];
               end
             end
             1:  begin
               if (wb_sel_i[3]) begin
-                adc0_config_start_reg <= OPB_DBus[31];
+                adc0_config_start_reg <= wb_data_i[31];
               end
               if (wb_sel_i[2]) begin
-                adc0_config_addr_reg <= OPB_DBus[20:23];
+                adc0_config_addr_reg <= wb_data_i[20:23];
               end
               if (wb_sel_i[1]) begin
-                adc0_config_data_reg[7:0] <= OPB_DBus[8:15];
+                adc0_config_data_reg[7:0] <= wb_data_i[8:15];
               end
               if (wb_sel_i[0]) begin
-                adc0_config_data_reg[15:8] <= OPB_DBus[0:7];
+                adc0_config_data_reg[15:8] <= wb_data_i[0:7];
               end
             end
             2:  begin
               if (wb_sel_i[3]) begin
-                adc1_config_start_reg <= OPB_DBus[31];
+                adc1_config_start_reg <= wb_data_i[31];
               end
               if (wb_sel_i[2]) begin
-                adc1_config_addr_reg <= OPB_DBus[20:23];
+                adc1_config_addr_reg <= wb_data_i[20:23];
               end
               if (wb_sel_i[1]) begin
-                adc1_config_data_reg[7:0] <= OPB_DBus[8:15];
+                adc1_config_data_reg[7:0] <= wb_data_i[8:15];
               end
               if (wb_sel_i[0]) begin
-                adc1_config_data_reg[15:8] <= OPB_DBus[0:7];
+                adc1_config_data_reg[15:8] <= wb_data_i[0:7];
               end
             end
             3:  begin
@@ -178,22 +167,19 @@ module wb_katadccontroller
     end
   end
 
-  reg [31:0] opb_data_out;
+  reg [31:0] wb_data_out;
 
   always @(*) begin
-    case (opb_addr[3:2])
-      0: opb_data_out <= {2'b0, adc1_psdone, adc0_psdone, 4'b0, 2'b0, adc1_mmcm_psincdec_reg, adc1_mmcm_psen_reg, 2'b0, adc0_mmcm_psincdec_reg, adc0_mmcm_psen_reg, 16'b0};
-      1: opb_data_out <= {adc0_config_data_reg[15:8], adc0_config_data_reg[7:0], 4'b0, adc0_config_addr_reg, 7'b0, adc0_config_done};
-      2: opb_data_out <= {adc1_config_data_reg[15:8], adc1_config_data_reg[7:0], 4'b0, adc1_config_addr_reg, 7'b0, adc1_config_done};
-      3: opb_data_out <= {32'b0};
+    case (wb_addr[3:2])
+      0: wb_data_out <= {2'b0, adc1_psdone, adc0_psdone, 4'b0, 2'b0, adc1_mmcm_psincdec_reg, adc1_mmcm_psen_reg, 2'b0, adc0_mmcm_psincdec_reg, adc0_mmcm_psen_reg, 16'b0};
+      1: wb_data_out <= {adc0_config_data_reg[15:8], adc0_config_data_reg[7:0], 4'b0, adc0_config_addr_reg, 7'b0, adc0_config_done};
+      2: wb_data_out <= {adc1_config_data_reg[15:8], adc1_config_data_reg[7:0], 4'b0, adc1_config_addr_reg, 7'b0, adc1_config_done};
+      3: wb_data_out <= {32'b0};
     endcase
   end
 
-  assign Sl_DBus     = Sl_xferAck ? opb_data_out : 32'b0;
-  assign Sl_errAck   = 1'b0;
-  assign Sl_retry    = 1'b0;
-  assign Sl_toutSup  = 1'b0;
-  assign Sl_xferAck  = opb_ack;
+  assign wb_data_o = wb_ack_o ? wb_data_out : 32'b0;
+  assign wb_ack_o  = wb_ack;
 
   /********* DCM Reset Gen *********/
 

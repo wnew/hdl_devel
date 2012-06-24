@@ -1,3 +1,3 @@
 TODO
 
-Rewrite the OPC controller to use wishbone
+test that wishbone interface is working correctly

@@ -5,19 +5,16 @@ module opb_attach #(
     parameter C_OPB_AWIDTH  = 32,
     parameter C_OPB_DWIDTH  = 32
   ) (
-    input         OPB_Clk,
-    input         OPB_Rst,
-    output [0:31] Sl_DBus,
-    output        Sl_errAck,
-    output        Sl_retry,
-    output        Sl_toutSup,
-    output        Sl_xferAck,
-    input  [0:31] OPB_ABus,
-    input  [0:3]  OPB_BE,
-    input  [0:31] OPB_DBus,
-    input         OPB_RNW,
-    input         OPB_select,
-    input         OPB_seqAddr,
+    input         wb_clk_i,
+    input         wb_rst_i,
+    input         wb_we_i,
+    input         wb_cyc_i,
+    input         wb_stb_i,
+    input  [0:3]  wb_sel_i,
+    input  [0:31] wb_data_i,
+    input  [0:31] wb_adr_i,
+    output [0:31] wb_data_o,
+    output        wb_ack_o,
 
     /**** IIC operations fifo controls *****/
     output        op_fifo_wr_en,
@@ -58,10 +55,10 @@ module opb_attach #(
 
   reg op_error_reg;
 
-  wire addr_match = OPB_ABus >= C_BASEADDR && OPB_ABus <= C_HIGHADDR;
-  wire [31:0] local_addr = OPB_ABus - C_BASEADDR;
+  wire addr_match = wb_adr_i >= C_BASEADDR && wb_adr_i <= C_HIGHADDR;
+  wire [31:0] local_addr = wb_adr_i - C_BASEADDR;
 
-  reg Sl_xferAck_reg;
+  reg wb_ack_o_reg;
 
   reg fifo_rst_reg;
   assign fifo_rst = fifo_rst_reg;
@@ -69,9 +66,9 @@ module opb_attach #(
   reg op_fifo_block_reg;
   assign op_fifo_block = op_fifo_block_reg;
 
-  always @(posedge OPB_Clk) begin
+  always @(posedge wb_clk_i) begin
     // Single cycle strobes
-    Sl_xferAck_reg    <= 1'b0;
+    wb_ack_o_reg    <= 1'b0;
     fifo_rst_reg      <= 1'b0;
     op_fifo_wr_en_reg <= 1'b0;
     rx_fifo_rd_en_reg <= 1'b0;
@@ -81,26 +78,26 @@ module opb_attach #(
     op_fifo_over_reg <= op_fifo_over_reg | op_fifo_over;
     rx_fifo_over_reg <= rx_fifo_over_reg | rx_fifo_over;
 
-    if (OPB_Rst) begin
+    if (wb_rst_i) begin
       op_fifo_over_reg  <= 1'b0;
       rx_fifo_over_reg  <= 1'b0;
       op_fifo_block_reg <= 1'b0;
     end else begin
-      if (addr_match && OPB_select && !Sl_xferAck_reg) begin
-        Sl_xferAck_reg <= 1'b1;
+      if (addr_match && !wb_ack_o_reg && wb_stb_i && wb_cyc_i) begin
+        wb_ack_o_reg <= 1'b1;
         case (local_addr[3:2])
           REG_OP_FIFO: begin
-            if (!OPB_RNW && OPB_BE[3]) begin
+            if (!wb_we_i && wb_sel_i[3]) begin
               op_fifo_wr_en_reg <= 1'b1;
             end
           end
           REG_RX_FIFO: begin
-            if (OPB_RNW && OPB_BE[3]) begin
+            if (wb_we_i && wb_sel_i[3]) begin
               rx_fifo_rd_en_reg <= 1'b1;
             end
           end
           REG_STATUS: begin
-            if (!OPB_RNW) begin
+            if (!wb_we_i) begin
               fifo_rst_reg     <= 1'b1;
               op_fifo_over_reg <= 1'b0;
               rx_fifo_over_reg <= 1'b0;
@@ -108,8 +105,8 @@ module opb_attach #(
             end
           end
           REG_CTRL: begin
-            if (!OPB_RNW && OPB_BE[3]) begin
-              op_fifo_block_reg <= OPB_DBus[31];
+            if (!wb_we_i && wb_sel_i[3]) begin
+              op_fifo_block_reg <= wb_data_i[31];
             end
           end
         endcase
@@ -117,34 +114,31 @@ module opb_attach #(
     end
   end
 
-  reg [31:0] opb_dout;
+  reg [31:0] wb_dout;
   always @(*) begin
     case (local_addr[3:2])
       REG_OP_FIFO: begin
-        opb_dout <= 32'b0;
+        wb_dout <= 32'b0;
       end
       REG_RX_FIFO: begin
-        opb_dout <= {24'b0, rx_fifo_rd_data};
+        wb_dout <= {24'b0, rx_fifo_rd_data};
       end
       REG_STATUS: begin
-        opb_dout <= {16'b0, 7'b0, op_error_reg, 1'b0, op_fifo_over_reg, op_fifo_full, op_fifo_empty, 1'b0, rx_fifo_over_reg, rx_fifo_full, rx_fifo_empty};
+        wb_dout <= {16'b0, 7'b0, op_error_reg, 1'b0, op_fifo_over_reg, op_fifo_full, op_fifo_empty, 1'b0, rx_fifo_over_reg, rx_fifo_full, rx_fifo_empty};
       end
       REG_CTRL: begin
-        opb_dout <= {31'b0, op_fifo_block_reg};
+        wb_dout <= {31'b0, op_fifo_block_reg};
       end
       default: begin
-        opb_dout <= 32'b0;
+        wb_dout <= 32'b0;
       end
     endcase
   end
 
-  assign Sl_DBus = Sl_xferAck_reg ? opb_dout : 32'b0;
-  assign Sl_errAck = 1'b0;
-  assign Sl_retry = 1'b0;
-  assign Sl_toutSup = 1'b0;
-  assign Sl_xferAck = Sl_xferAck_reg;
+  assign wb_data_o = wb_ack_o_reg ? wb_dout : 32'b0;
+  assign wb_ack_o  = wb_ack_o_reg;
 
-  /* OPB fifo assignments */
-  assign op_fifo_wr_data = OPB_DBus[20:31];
+  /* wb fifo assignments */
+  assign op_fifo_wr_data = wb_data_i[20:31];
 
 endmodule
