@@ -1,16 +1,33 @@
-//==========================================
-// Function : Code Gray counter.
-// Coder    : Alex Claros F.
-// Date     : 15/May/2005.
-//=======================================
+//============================================================================//
+//                                                                            //
+//      Parameterize Gray Counter                                             //
+//                                                                            //
+//      Module name: gray counter                                             //
+//      Desc: parameterized gray counter, counts up to the specified data     //
+//            width and repeats indefinitely.                                 //
+//      Date: June 2012                                                       //
+//      Developer: Wesley New                                                 //
+//      Licence: GNU General Public License ver 3                             //
+//      Notes:                                                                //
+//                                                                            //
+//============================================================================//
 
 module gray_counter #(
-      parameter DATA_WIDTH = 4
+      //=============
+      // parameters
+      //=============
+      parameter DATA_WIDTH = 32
    ) (
+      //===============
+      // Input Ports
+      //===============
       input wire clk,
-      input wire en,  //Count enable.
-      input wire rst, //Count reset.
+      input wire en,
+      input wire rst,
    
+      //===============
+      // Output Ports
+      //===============
       output reg [DATA_WIDTH-1:0] count_out  //'Gray' code count output.
    );
 
@@ -28,5 +45,4 @@ module gray_counter #(
                           binary_count[DATA_WIDTH-2:0] ^ binary_count[DATA_WIDTH-1:1]};
       end
    end
-    
 endmodule
