@@ -1,9 +1,9 @@
 `timescale 1ns/1ps
-module opb_attach #(
+module wb_attach #(
     parameter C_BASEADDR    = 32'h00000000,
     parameter C_HIGHADDR    = 32'h0000FFFF,
-    parameter C_OPB_AWIDTH  = 32,
-    parameter C_OPB_DWIDTH  = 32
+    parameter C_WB_AWIDTH   = 32,
+    parameter C_WB_DWIDTH   = 32
   ) (
     input         wb_clk_i,
     input         wb_rst_i,
@@ -11,9 +11,9 @@ module opb_attach #(
     input         wb_cyc_i,
     input         wb_stb_i,
     input  [0:3]  wb_sel_i,
-    input  [0:31] wb_data_i,
+    input  [0:31] wb_dat_i,
     input  [0:31] wb_adr_i,
-    output [0:31] wb_data_o,
+    output [0:31] wb_dat_o,
     output        wb_ack_o,
 
     /**** IIC operations fifo controls *****/
@@ -38,7 +38,7 @@ module opb_attach #(
     input         op_error
   );
 
-  /************* OPB Attach ***************/
+  /************* WB Attach ***************/
 
   localparam REG_OP_FIFO = 0;
   localparam REG_RX_FIFO = 1;
@@ -106,7 +106,7 @@ module opb_attach #(
           end
           REG_CTRL: begin
             if (!wb_we_i && wb_sel_i[3]) begin
-              op_fifo_block_reg <= wb_data_i[31];
+              op_fifo_block_reg <= wb_dat_i[31];
             end
           end
         endcase
@@ -135,10 +135,10 @@ module opb_attach #(
     endcase
   end
 
-  assign wb_data_o = wb_ack_o_reg ? wb_dout : 32'b0;
+  assign wb_dat_o = wb_ack_o_reg ? wb_dout : 32'b0;
   assign wb_ack_o  = wb_ack_o_reg;
 
   /* wb fifo assignments */
-  assign op_fifo_wr_data = wb_data_i[20:31];
+  assign op_fifo_wr_data = wb_dat_i[20:31];
 
 endmodule

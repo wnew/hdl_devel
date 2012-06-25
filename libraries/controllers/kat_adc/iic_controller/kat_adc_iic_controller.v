@@ -1,27 +1,24 @@
 `timescale 1ns/1ps
 module kat_adc_iic_controller(
-    input         OPB_Clk,
-    input         OPB_Rst,
-    output [0:31] Sl_DBus,
-    output        Sl_errAck,
-    output        Sl_retry,
-    output        Sl_toutSup,
-    output        Sl_xferAck,
-    input  [0:31] OPB_ABus,
-    input  [0:3]  OPB_BE,
-    input  [0:31] OPB_DBus,
-    input         OPB_RNW,
-    input         OPB_select,
-    input         OPB_seqAddr,
+    input         wb_clk_i,
+    input         wb_rst_i,
+    input         wb_we_i,
+    input         wb_cyc_i,
+    input         wb_stb_i,
+    input  [0:3]  wb_sel_i,
+    input  [0:31] wb_adr_i,
+    input  [0:31] wb_dat_i,
+    output [0:31] wb_dat_o,
+    output        wb_ack_o,
 
     output        xfer_done,
 
-	  input         sda_i,
-	  output        sda_o,
-	  output        sda_t,
-	  input         scl_i,
-	  output        scl_o,
-	  output        scl_t,
+    input         sda_i,
+    output        sda_o,
+    output        sda_t,
+    input         scl_i,
+    output        scl_o,
+    output        scl_t,
 
     input         app_clk,
     input         gain_load,
@@ -29,13 +26,13 @@ module kat_adc_iic_controller(
   );
   parameter C_BASEADDR    = 32'h00000000;
   parameter C_HIGHADDR    = 32'h0000FFFF;
-  parameter C_OPB_AWIDTH  = 32;
-  parameter C_OPB_DWIDTH  = 32;
+  parameter C_WB_AWIDTH  = 32;
+  parameter C_WB_DWIDTH  = 32;
   parameter IIC_FREQ      = 100;  //kHz
   parameter CORE_FREQ     = 100000; //kHz
   parameter EN_GAIN       = 0;
 
-  /************** OPB Attachment *************/
+  /************** WB Attachment *************/
 
   wire        cpu_op_fifo_wr_en;
   wire [11:0] cpu_op_fifo_wr_data;
@@ -58,25 +55,22 @@ module kat_adc_iic_controller(
   wire        cpu_op_fifo_block;
   wire        cpu_op_error;
 
-  opb_attach #(
+  wb_attach #(
     .C_BASEADDR   (C_BASEADDR),
     .C_HIGHADDR   (C_HIGHADDR),
-    .C_OPB_AWIDTH (C_OPB_AWIDTH),
-    .C_OPB_DWIDTH (C_OPB_DWIDTH)
-  ) opb_attch_inst (
-    .OPB_Clk         (OPB_Clk),
-    .OPB_Rst         (OPB_Rst),
-    .Sl_DBus         (Sl_DBus),
-    .Sl_errAck       (Sl_errAck),
-    .Sl_retry        (Sl_retry),
-    .Sl_toutSup      (Sl_toutSup),
-    .Sl_xferAck      (Sl_xferAck),
-    .OPB_ABus        (OPB_ABus),
-    .OPB_BE          (OPB_BE),
-    .OPB_DBus        (OPB_DBus),
-    .OPB_RNW         (OPB_RNW),
-    .OPB_select      (OPB_select),
-    .OPB_seqAddr     (OPB_seqAddr),
+    .C_WB_AWIDTH  (C_WB_AWIDTH),
+    .C_WB_DWIDTH  (C_WB_DWIDTH)
+  ) wb_attch_inst (
+    .wb_clk_i        (wb_clk_i),
+    .wb_rst_i        (wb_rst_i),
+    .wb_we_i         (wb_we_i),
+    .wb_cyc_i        (wb_cyc_i),
+    .wb_stb_i        (wb_stb_i),
+    .wb_sel_i        (wb_sel_i),
+    .wb_adr_i        (wb_adr_i),
+    .wb_dat_i        (wb_dat_i),
+    .wb_dat_o        (wb_dat_o),
+    .wb_ack_o        (wb_ack_o),
 
     .op_fifo_wr_en   (cpu_op_fifo_wr_en),
     .op_fifo_wr_data (cpu_op_fifo_wr_data),
@@ -99,14 +93,14 @@ module kat_adc_iic_controller(
   reg cpu_op_fifo_empty_z;
   assign xfer_done = cpu_op_fifo_empty && !cpu_op_fifo_empty_z;
 
-  always @(posedge OPB_Clk) begin
+  always @(posedge wb_clk_i) begin
     cpu_op_fifo_empty_z <= cpu_op_fifo_empty;
   end
 
   /* CPU Fifos */
 
   cpu_op_fifo cpu_op_fifo_inst(
-    .clk      (OPB_Clk),
+    .clk      (wb_clk_i),
     .din      (cpu_op_fifo_wr_data),
     .rd_en    (cpu_op_fifo_rd_en),
     .rst      (fifo_rst),
@@ -119,7 +113,7 @@ module kat_adc_iic_controller(
   //synthesis attribute BOX_TYPE of cpu_op_fifo_inst is BLACK_BOX
 
   rx_fifo rx_fifo_inst(
-    .clk      (OPB_Clk),
+    .clk      (wb_clk_i),
     .din      (rx_fifo_wr_data),
     .rd_en    (rx_fifo_rd_en),
     .rst      (fifo_rst),
@@ -166,7 +160,7 @@ generate if (EN_GAIN) begin :GAIN_ENABLE_generate
   
     gain_set gain_set_inst (
       .clk          (app_clk),
-      .rst          (OPB_Rst),
+      .rst          (wb_rst_i),
       .gain_value   (gain_value),
       .gain_load    (gain_load),
       .trans_vld    (trans_vld),
@@ -188,7 +182,7 @@ generate if (EN_GAIN) begin :GAIN_ENABLE_generate
       .din      (fab_op_fifo_wr_data),
       .wr_en    (fab_op_fifo_wr_en),
   
-      .rd_clk   (OPB_Clk),
+      .rd_clk   (wb_clk_i),
       .dout     (fab_op_fifo_rd_data),
       .rd_en    (fab_op_fifo_rd_en),
       .empty    (fab_op_fifo_empty),
@@ -228,8 +222,8 @@ endgenerate
 
   reg locked;
 
-  always @(posedge OPB_Clk) begin
-    if (OPB_Rst) begin
+  always @(posedge wb_clk_i) begin
+    if (wb_rst_i) begin
       arb_select <= ARB_CPU;
       locked <= 1'b0;
     end else begin
@@ -278,8 +272,8 @@ endgenerate
     .IIC_FREQ  (IIC_FREQ),
     .CORE_FREQ (CORE_FREQ)
   ) miic_ops_inst(
-    .clk        (OPB_Clk),
-    .rst        (OPB_Rst),
+    .clk        (wb_clk_i),
+    .rst        (wb_rst_i),
     .op_valid   (op_valid),
     .op_start   (op_start),
     .op_stop    (op_stop),
@@ -288,12 +282,12 @@ endgenerate
     .op_rd_data (op_rd_data),
     .op_ack     (op_ack),
     .op_err     (op_err),
-	  .sda_i      (sda_i),
-	  .sda_o      (sda_o),
-	  .sda_t      (sda_t),
-	  .scl_i      (scl_i),
-	  .scl_o      (scl_o),
-	  .scl_t      (scl_t)
+	 .sda_i      (sda_i),
+	 .sda_o      (sda_o),
+	 .sda_t      (sda_t),
+	 .scl_i      (scl_i),
+	 .scl_o      (scl_o),
+	 .scl_t      (scl_t)
   );
 
   assign fab_op_ack = op_ack && arb_select == ARB_FAB;
