@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-module kat_adc_iic_controller(
+module iic_controller(
     input         wb_clk_i,
     input         wb_rst_i,
     input         wb_we_i,

@@ -1,4 +1,4 @@
-module wb_katadccontroller(
+module spi_controller(
 
     input         wb_clk_i,
     input         wb_rst_i,
@@ -31,7 +31,7 @@ module wb_katadccontroller(
     output        adc1_psen,
     output        adc1_psincdec,
     input         adc1_psdone,
-    input         adc1_clk
+    input         adc1_clk             
   );
   parameter C_BASEADDR    = 32'h00000000;
   parameter C_HIGHADDR    = 32'h0000FFFF;
