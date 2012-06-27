@@ -26,8 +26,8 @@ module kat_adc_iic_controller(
   );
   parameter C_BASEADDR    = 32'h00000000;
   parameter C_HIGHADDR    = 32'h0000FFFF;
-  parameter C_WB_AWIDTH  = 32;
-  parameter C_WB_DWIDTH  = 32;
+  parameter C_WB_AWIDTH   = 32;
+  parameter C_WB_DWIDTH   = 32;
   parameter IIC_FREQ      = 100;  //kHz
   parameter CORE_FREQ     = 100000; //kHz
   parameter EN_GAIN       = 0;
