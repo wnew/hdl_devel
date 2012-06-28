@@ -82,6 +82,36 @@ def kat_adc_wrapper(block_name,
    @always(mmcm_reset)
    def logic():
       pass
+   
+   adc_rst.driven       = "wire"
+   adc_powerdown.driven = "wire"
+
+   user_datai0.driven      = "wire"
+   user_datai1.driven      = "wire"
+   user_datai2.driven      = "wire"
+   user_datai3.driven      = "wire"
+   user_dataq0.driven      = "wire"
+   user_dataq1.driven      = "wire"
+   user_dataq2.driven      = "wire"
+   user_dataq3.driven      = "wire"
+   user_sync0.driven       = "wire"
+   user_sync1.driven       = "wire"
+   user_sync2.driven       = "wire"
+   user_sync3.driven       = "wire"
+   user_outofrange0.driven = "wire"
+   user_outofrange1.driven = "wire"
+   user_data_valid.driven  = "wire"
+   
+   ctrl_reset.driven       = "wire"
+   ctrl_clk_in.driven      = "wire"
+   ctrl_clk_out.driven     = "wire"
+   ctrl_clk90_out.driven   = "wire"
+   ctrl_clk180_out.driven  = "wire"
+   ctrl_clk270_out.driven  = "wire"
+   ctrl_mmcm_locked.driven = "wire"
+   
+   mmcm_reset.driven       = "wire"
+   mmcm_psdone.driven      = "wire"
 
    return logic
 
@@ -177,7 +207,7 @@ def convert():
    mmcm_psincdec,   mmcm_psdone) = [Signal(bool(0)) for i in range(12)]
 
    toVerilog(kat_adc_wrapper,                   block_name="inst1", 
-             adc_clk_p=adc_clk_p,               adc_clk_n=adc_clk_n, 
+        adc_clk_p=adc_clk_p,               adc_clk_n=adc_clk_n, 
 	     adc_sync_p=adc_sync_p,             adc_sync_n=adc_sync_n, 
 	     adc_overrange_p=adc_overrange_p,   adc_overrange_n=adc_overrange_n, 
 	     adc_rst=adc_rst,                   adc_powerdown=adc_powerdown,
