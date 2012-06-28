@@ -45,7 +45,7 @@ def counter_wrapper(block_name,
          out = COUNT_FROM
 
    # removes warning when converting to hdl
-   #out.driven = "wire"
+   out.driven = "wire"
 
    return logic
 

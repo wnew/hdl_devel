@@ -43,7 +43,6 @@ def slice_wrapper(block_name,
 
 
    # removes warning when converting to hdl
-   data_in.driven = "wire"
    data_out.driven = "wire"
 
    return logic

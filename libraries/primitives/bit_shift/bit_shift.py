@@ -40,7 +40,8 @@ def bit_shift_wrapper(block_name,
          data_out.next[8:] = (data_in[:]*2**NUMBER_OF_BITS)
       else:
          data_out.next = (data_in[:]*2**NUMBER_OF_BITS)
-
+   
+   data_out.driven = "wire"
 
    return logic
 

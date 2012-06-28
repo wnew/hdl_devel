@@ -69,7 +69,7 @@ def bit_reorder_wrapper(block_name,
    def logic():
       pass
    # removes warning when converting to hdl
-   #out.driven = "wire"
+   vector_out.driven = "wire"
 
    return logic
 
