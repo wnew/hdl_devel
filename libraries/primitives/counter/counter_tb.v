@@ -65,6 +65,7 @@ module counter_tb;
    //=============
    initial
    begin
+      $dumpvars;
       clk = 0;
       en  = 1;
       rst = 0;

@@ -47,7 +47,7 @@ module counter #(
             begin
                // if ACTIVE_LOW_RST is defined then reset on a low
                // this should be defined on a system-wide basis
-               if ((`ifdef ACTIVE_LOW_RST !rst `else rst `endif) && out < COUNT_TO)
+               if ((`ifdef ACTIVE_LOW_RST rst `else !rst `endif) && out < COUNT_TO)
                begin
                   if (en == 1)
                   begin
