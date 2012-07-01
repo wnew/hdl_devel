@@ -69,7 +69,7 @@ def iic_controller_wrapper(block_name,
 #===============================
 iic_controller_wrapper.verilog_code = \
 """
-icc_controller #(
+iic_controller #(
    .C_BASEADDR  ($C_BASEADDR),
    .C_HIGHADDR  ($C_HIGHADDR),
    .C_WB_AWIDTH ($C_WB_AWIDTH),
