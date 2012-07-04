@@ -16,56 +16,60 @@ module bram_wb #(
       //=============
       // Parameters
       //=============
-      parameter DATA_WIDTH  = 32,
-      parameter ADDR_WIDTH  = 8,
-      parameter SLEEP_COUNT = 4
+      parameter BUS_BASE_ADDR  = 0,
+      parameter BUS_HIGH_ADDR  = 32,
+      parameter BUS_DATA_WIDTH = 32,
+      parameter BUS_ADDR_WIDTH = 8,
+      parameter BUS_BE_WIDTH   = 4,
+      parameter SLEEP_COUNT    = 4
    ) (
       //===============
       // Fabric Ports
       //===============
-      input                   fabric_clk,
-      input                   fabric_rst,
-      input                   fabric_we,
-      input  [ADDR_WIDTH-1:0] fabric_addr,
-      input  [DATA_WIDTH-1:0] fabric_data_in,
-      output [DATA_WIDTH-1:0] fabric_data_out,
+      input                       fabric_clk,
+      input                       fabric_rst,
+      input                       fabric_we,
+      input  [RAM_ADDR_WIDTH-1:0] fabric_addr,
+      input  [RAM_DATA_WIDTH-1:0] fabric_data_in,
+      output [RAM_DATA_WIDTH-1:0] fabric_data_out,
 
       //=================
       // Wishbone Ports
       //=================
-      input  wire                  wbs_clk_i,
-      input  wire                  wbs_rst_i,
-      input  wire                  wbs_we_i,
-      input  wire                  wbs_cyc_i,
-      input  wire [3:0]            wbs_sel_i,
-      input  wire                  wbs_stb_i,
-      input  wire [ADDR_WIDTH-1:0] wbs_adr_i,
-      input  wire [DATA_WIDTH-1:0] wbs_dat_i,
-      output reg  [DATA_WIDTH-1:0] wbs_dat_o,
-      output reg                   wbs_int_o,
-      output reg                   wbs_ack_o
+      input  wire                      wbs_clk_i,
+      input  wire                      wbs_rst_i,
+      input  wire                      wbs_cyc_i,
+      input  wire                      wbs_stb_i,
+      input  wire                      wbs_we_i,
+      input  wire [BUS_BE_WIDTH-1:0]   wbs_sel_i,
+      input  wire [BUS_ADDR_WIDTH-1:0] wbs_adr_i,
+      input  wire [BUS_DATA_WIDTH-1:0] wbs_dat_i,
+      output reg  [BUS_DATA_WIDTH-1:0] wbs_dat_o,
+      output reg                       wbs_ack_o
    );
 
    //===================
    // Local Parameters
    //===================
-   localparam DATA_DEPTH = 2 ** ADDR_WIDTH;
+   localparam RAM_DATA_WIDTH = 32;
+   localparam RAM_ADDR_WIDTH = 8;
+   localparam DATA_DEPTH = 2 ** RAM_ADDR_WIDTH;
 
    //======================
    // Local Reg and Wires
    //======================
-   wire [DATA_WIDTH-1:0] read_data;
-   reg  [DATA_WIDTH-1:0] write_data;
-   reg  [ADDR_WIDTH-1:0] ram_adr;
-   reg  [3:0]            ram_sleep;
-   reg                   en_ram;
+   wire [RAM_DATA_WIDTH-1:0] read_data;
+   reg  [RAM_DATA_WIDTH-1:0] write_data;
+   reg  [RAM_ADDR_WIDTH-1:0] ram_adr;
+   reg  [3:0]                ram_sleep;
+   reg                       en_ram;
 
    //================
    // BRAM instance
    //================   
    bram_sync_dp #(
-         .DATA_WIDTH (DATA_WIDTH),
-         .ADDR_WIDTH (ADDR_WIDTH)
+         .DATA_WIDTH (RAM_DATA_WIDTH),
+         .ADDR_WIDTH (RAM_ADDR_WIDTH)
       ) bram_inst (
          .rst        (wbs_rst_i || fabric_rst),
          .en         (en_ram),
@@ -91,7 +95,6 @@ module bram_wb #(
       if (fabric_rst || wbs_rst_i) begin
          wbs_dat_o   <= 32'h00000000;
          wbs_ack_o   <= 0;
-         wbs_int_o   <= 0;
          ram_sleep   <= SLEEP_COUNT;
          ram_adr     <= 0;
          en_ram      <= 0;
@@ -106,7 +109,7 @@ module bram_wb #(
          if (wbs_stb_i & wbs_cyc_i) begin
             //master is requesting somethign
             en_ram <= 1;
-            ram_adr <= wbs_adr_i[ADDR_WIDTH:0];
+            ram_adr <= wbs_adr_i[BUS_ADDR_WIDTH:0];
             if (wbs_we_i) begin
                //write request
                //the bram module will handle all the writes

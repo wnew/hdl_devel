@@ -23,39 +23,39 @@ module sw_reg_r #(
       //=============
       // parameters
       //=============
-      parameter C_BASEADDR      = 32'h00000000,
-      parameter C_HIGHADDR      = 32'h0000000F,
-      parameter C_WB_DATA_WIDTH = 32,
-      parameter C_WB_ADDR_WIDTH = 1,
-      parameter C_BYTE_EN_WIDTH = 4
+      parameter C_BASEADDR       = 32'h00000000,
+      parameter C_HIGHADDR       = 32'h0000000F,
+      parameter C_BUS_DATA_WIDTH = 32,
+      parameter C_BUS_ADDR_WIDTH = 5,
+      parameter C_BYTE_EN_WIDTH  = 4
    ) (
       //===============
       // fabric ports
       //===============
-      input         fabric_clk,
-      input         fabric_data_in,
+      input        fabric_clk,
+      input [31:0] fabric_data_in,
       
       //============
       // wb inputs
       //============
-      input         wb_clk_i,
-      input         wb_rst_i,
-      input         wb_cyc_i,
-      input         wb_stb_i,
-      input         wb_we_i,
-      input   [3:0] wb_sel_i,
-      input  [31:0] wb_adr_i,
-      input  [31:0] wb_dat_i,
+      input        wbs_clk_i,
+      input        wbs_rst_i,
+      input        wbs_cyc_i,
+      input        wbs_stb_i,
+      input        wbs_we_i,
+      input  [3:0] wbs_sel_i,
+      input [31:0] wbs_adr_i,
+      input [31:0] wbs_dat_i,
       
       //=============
       // wb outputs
       //=============
-      output reg [31:0] wb_dat_o,
-      output reg        wb_ack_o,
-      output reg        wb_err_o
+      output reg [31:0] wbs_dat_o,
+      output reg        wbs_ack_o,
+      output reg        wbs_err_o
    );
  
-   wire a_match = wb_adr_i >= C_BASEADDR && wb_adr_i <= C_HIGHADDR;
+   wire a_match = wbs_adr_i >= C_BASEADDR && wbs_adr_i <= C_HIGHADDR;
  
    reg [31:0] fabric_data_in_reg;
    
@@ -67,46 +67,22 @@ module sw_reg_r #(
    //=============
    // wb control
    //=============
-   always @(posedge wb_clk_i)
+   always @(posedge wbs_clk_i)
    begin
-      wb_ack_o <= 1'b0;
-      if (wb_rst_i)
-      begin
-         //
-      end
-      else
-      begin
-         if (wb_stb_i && wb_cyc_i)
-         begin
-            wb_ack_o <= 1'b1;
-         end
-      end
-   end
- 
-   //==========
-   // wb read
-   //==========
-   always @(*)
-   begin
-      if (wb_rst_i)
+      register_readyR  <= register_ready;
+      register_readyRR <= register_readyR;
+      
+      wbs_ack_o <= 1'b0;
+      if (wbs_rst_i)
       begin
          register_request <= 1'b0;
       end
-      if(~wb_we_i)
+      else
       begin
-         case (wb_adr_i[6:2])
-            // Check if this works, it should depend on the spacings between devices on the bus,
-            // otherwise just check if the address is in range and dont worry about the case statement
-            // blah blah
-            5'h0:   
-            begin   
-               wb_dat_o <= reg_buffer;
-            end
-            default:
-            begin
-               wb_dat_o <= 32'b0;
-            end
-         endcase
+         if (wbs_stb_i && wbs_cyc_i)
+         begin
+            wbs_ack_o <= 1'b1;
+         end
       end
       if (register_readyRR)
       begin
@@ -121,6 +97,33 @@ module sw_reg_r #(
       begin
          /* always request the buffer */
          register_request <= 1'b1;
+      end
+   end
+ 
+   //==========
+   // wb read
+   //==========
+   always @(*)
+   begin
+      if (wbs_rst_i)
+      begin
+         register_request <= 1'b0;
+      end
+      if(~wbs_we_i)
+      begin
+         case (wbs_adr_i[6:2])
+            // Check if this works, it should depend on the spacings between devices on the bus,
+            // otherwise just check if the address is in range and dont worry about the case statement
+            // blah blah
+            5'h0:   
+            begin   
+               wbs_dat_o <= reg_buffer;
+            end
+            default:
+            begin
+               wbs_dat_o <= 32'b0;
+            end
+         endcase
       end
    end
    
@@ -140,6 +143,8 @@ module sw_reg_r #(
    begin
       register_requestR  <= register_request;
       register_requestRR <= register_requestR;
+      //register_readyR    <= register_ready;
+      //register_readyRR   <= register_readyR;
  
       if (register_requestRR)
       begin

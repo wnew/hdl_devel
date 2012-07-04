@@ -23,21 +23,21 @@ def sw_reg_wr_wrapper(block_name,
       #============
       # wb inputs
       #============
-      wb_clk_i,
-      wb_rst_i,
-      wb_cyc_i,
-      wb_stb_i,
-      wb_we_i,
-      wb_sel_i,
-      wb_adr_i,
-      wb_dat_i,
+      wbs_clk_i,
+      wbs_rst_i,
+      wbs_cyc_i,
+      wbs_stb_i,
+      wbs_we_i,
+      wbs_sel_i,
+      wbs_adr_i,
+      wbs_dat_i,
 
       #=============
       # wb outputs
       #=============
-      wb_dat_o,
-      wb_ack_o,
-      wb_err_o,
+      wbs_dat_o,
+      wbs_ack_o,
+      wbs_err_o,
 
       #=============
       # Parameters
@@ -52,7 +52,7 @@ def sw_reg_wr_wrapper(block_name,
    #========================
    # TODO:Simulation Logic
    #========================
-   @always(wb_clk_i.posedge)
+   @always(wbs_clk_i.posedge)
    def logic():
       if (rst == 0 and out < COUNT_TO):
          if (en == 1):
@@ -61,9 +61,9 @@ def sw_reg_wr_wrapper(block_name,
          out = COUNT_FROM
 
    # removes warning when converting to hdl
-   wb_dat_o.driven = "wire"
-   wb_ack_o.driven = "wire"
-   wb_err_o.driven = "wire"
+   wbs_dat_o.driven = "wire"
+   wbs_ack_o.driven = "wire"
+   wbs_err_o.driven = "wire"
    fabric_data_out.driven = "wire"
 
    return logic
@@ -84,19 +84,18 @@ sw_reg_wr
   
    .fabric_clk      ($fabric_clk),
    .fabric_data_out ($fabric_data_out),
-                                    
-   .wb_clk_i        ($wb_clk_i),
-   .wb_rst_i        ($wb_rst_i),
-   .wb_cyc_i        ($wb_cyc_i),
-   .wb_stb_i        ($wb_stb_i),
-   .wb_we_i         ($wb_we_i),
-   .wb_sel_i        ($wb_sel_i),
-   .wb_adr_i        ($wb_adr_i),
-   .wb_dat_i        ($wb_dat_i),
-                                     
-   .wb_dat_o        ($wb_dat_o),
-   .wb_ack_o        ($wb_ack_o),
-   .wb_err_o        ($wb_err_o)
+    
+   .wbs_clk_i       ($wbs_clk_i),
+   .wbs_rst_i       ($wbs_rst_i),
+   .wbs_cyc_i       ($wbs_cyc_i[SLI]),
+   .wbs_stb_i       ($wbs_stb_i[SLI]),
+   .wbs_we_i        ($wbs_we_i),
+   .wbs_sel_i       ($wbs_sel_i),
+   .wbs_adr_i       ($wbs_adr_i),
+   .wbs_dat_i       ($wbs_dat_i),
+   .wbs_dat_o       ($wbs_dat_o[(SLI+1)*32:SLI*32]),
+   .wbs_ack_o       ($wbs_ack_o[SLI])
+   .wbs_err_o       ($wbs_err_o)
 );
 """
 
@@ -106,9 +105,9 @@ sw_reg_wr
 #=======================================
 def convert():
 
-   fabric_clk,fabric_data_out,wb_clk_i,wb_rst_i,wb_cyc_i,wb_stb_i,wb_we_i,wb_sel_i,wb_adr_i,wb_dat_i,wb_dat_o,wb_ack_o,wb_err_o = [Signal(bool(0)) for i in range(13)]
+   fabric_clk,fabric_data_out,wbs_clk_i,wbs_rst_i,wbs_cyc_i,wbs_stb_i,wbs_we_i,wbs_sel_i,wbs_adr_i,wbs_dat_i,wbs_dat_o,wbs_ack_o,wbs_err_o = [Signal(bool(0)) for i in range(13)]
 
-   toVerilog(sw_reg_wr_wrapper, block_name="sw_reg", fabric_clk=fabric_clk,fabric_data_out=fabric_data_out,wb_clk_i=wb_clk_i,wb_rst_i=wb_rst_i,wb_cyc_i=wb_cyc_i,wb_stb_i=wb_stb_i,wb_we_i=wb_we_i,wb_sel_i=wb_sel_i,wb_adr_i=wb_adr_i,wb_dat_i=wb_dat_i,wb_dat_o=wb_dat_o,wb_ack_o=wb_ack_o,wb_err_o=wb_err_o)
+   toVerilog(sw_reg_wr_wrapper, block_name="sw_reg", fabric_clk=fabric_clk,fabric_data_out=fabric_data_out,wbs_clk_i=wbs_clk_i,wbs_rst_i=wbs_rst_i,wbs_cyc_i=wbs_cyc_i,wbs_stb_i=wbs_stb_i,wbs_we_i=wbs_we_i,wbs_sel_i=wbs_sel_i,wbs_adr_i=wbs_adr_i,wbs_dat_i=wbs_dat_i,wbs_dat_o=wbs_dat_o,wbs_ack_o=wbs_ack_o,wbs_err_o=wbs_err_o)
 
 if __name__ == "__main__":
    convert()

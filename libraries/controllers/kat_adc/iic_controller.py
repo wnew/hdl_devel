@@ -17,16 +17,16 @@ def iic_controller_wrapper(block_name,
       #===================
       # wishbone signals
       #===================
-      wb_clk_i,
-      wb_rst_i,
-      wb_we_i,
-      wb_cyc_i,
-      wb_stb_i,
-      wb_sel_i,
-      wb_adr_i,
-      wb_dat_i,
-      wb_dat_o,
-      wb_ack_o,
+      wbs_clk_i,
+      wbs_rst_i,
+      wbs_we_i,
+      wbs_cyc_i,
+      wbs_stb_i,
+      wbs_sel_i,
+      wbs_adr_i,
+      wbs_dat_i,
+      wbs_dat_o,
+      wbs_ack_o,
 
       xfer_done,
       
@@ -57,7 +57,7 @@ def iic_controller_wrapper(block_name,
    ):
 
 
-   @always(wb_clk_i)
+   @always(wbs_clk_i)
    def logic():
       pass
 
@@ -78,16 +78,16 @@ iic_controller #(
    .CORE_FREQ   ($CORE_FREQ),
    .EN_GAIN     ($EN_GAIN)
 ) iic_controller_$block_name (
-   .wb_clk_i   ($wb_clk_i), 
-   .wb_rst_i   ($wb_rst_i),
-   .wb_we_i    ($wb_we_i),
-   .wb_cyc_i   ($wb_cyc_i),
-   .wb_stb_i   ($wb_stb_i),
-   .wb_sel_i   ($wb_sel_i),
-   .wb_adr_i   ($wb_adr_i),
-   .wb_dat_i   ($wb_dat_i),
-   .wb_dat_o   ($wb_dat_o),
-   .wb_ack_o   ($wb_ack_o),
+   .wbs_clk_i   ($wbs_clk_i), 
+   .wbs_rst_i   ($wbs_rst_i),
+   .wbs_we_i    ($wbs_we_i),
+   .wbs_cyc_i   ($wbs_cyc_i),
+   .wbs_stb_i   ($wbs_stb_i),
+   .wbs_sel_i   ($wbs_sel_i),
+   .wbs_adr_i   ($wbs_adr_i),
+   .wbs_dat_i   ($wbs_dat_i),
+   .wbs_dat_o   ($wbs_dat_o),
+   .wbs_ack_o   ($wbs_ack_o),
                        
    .xfer_done  ($xfer_done),
                        
@@ -109,10 +109,10 @@ iic_controller #(
 #=======================================
 def convert():
 
-   (wb_clk_i, wb_rst_i, wb_we_i, 
-   wb_cyc_i,  wb_stb_i, wb_sel_i,
-   wb_adr_i,  wb_dat_i, wb_dat_o,
-   wb_ack_o,
+   (wbs_clk_i, wbs_rst_i, wbs_we_i, 
+   wbs_cyc_i,  wbs_stb_i, wbs_sel_i,
+   wbs_adr_i,  wbs_dat_i, wbs_dat_o,
+   wbs_ack_o,
         
    xfer_done,
            
@@ -122,16 +122,16 @@ def convert():
    app_clk, gain_load, gain_value) = [Signal(bool(0)) for i in range(20)] 
 
    toVerilog(iic_controller_wrapper, block_name="inst1", 
-      wb_clk_i   = wb_clk_i,
-      wb_rst_i   = wb_rst_i,
-      wb_we_i    = wb_we_i,
-      wb_cyc_i   = wb_cyc_i,
-      wb_stb_i   = wb_stb_i,
-      wb_sel_i   = wb_sel_i,
-      wb_adr_i   = wb_adr_i,
-      wb_dat_i   = wb_dat_i,
-      wb_dat_o   = wb_dat_o,
-      wb_ack_o   = wb_ack_o,
+      wbs_clk_i   = wbs_clk_i,
+      wbs_rst_i   = wbs_rst_i,
+      wbs_we_i    = wbs_we_i,
+      wbs_cyc_i   = wbs_cyc_i,
+      wbs_stb_i   = wbs_stb_i,
+      wbs_sel_i   = wbs_sel_i,
+      wbs_adr_i   = wbs_adr_i,
+      wbs_dat_i   = wbs_dat_i,
+      wbs_dat_o   = wbs_dat_o,
+      wbs_ack_o   = wbs_ack_o,
 
       xfer_done  = xfer_done,
 

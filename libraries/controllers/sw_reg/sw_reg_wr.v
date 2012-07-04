@@ -33,21 +33,21 @@ module sw_reg_wr #(
       //================
       // wb inputs
       //================
-      input         wb_clk_i,
-      input         wb_rst_i,
-      input         wb_cyc_i,
-      input         wb_stb_i,
-      input         wb_we_i,
-      input   [3:0] wb_sel_i,
-      input  [31:0] wb_adr_i,
-      input  [31:0] wb_dat_i,
+      input         wbs_clk_i,
+      input         wbs_rst_i,
+      input         wbs_cyc_i,
+      input         wbs_stb_i,
+      input         wbs_we_i,
+      input   [3:0] wbs_sel_i,
+      input  [31:0] wbs_adr_i,
+      input  [31:0] wbs_dat_i,
       
       //================
       // wb outputs
       //================
-      output [31:0] wb_dat_o,
-      output        wb_ack_o,
-      output        wb_err_o,
+      output [31:0] wbs_dat_o,
+      output        wbs_ack_o,
+      output        wbs_err_o,
  
       //================
       // fabric ports
@@ -56,7 +56,7 @@ module sw_reg_wr #(
       output        fabric_data_out
    );
  
-   wire a_match = wb_adr_i >= C_BASEADDR && wb_adr_i <= C_HIGHADDR;
+   wire a_match = wbs_adr_i >= C_BASEADDR && wbs_adr_i <= C_HIGHADDR;
  
    //================
    // register buffer 
@@ -66,20 +66,20 @@ module sw_reg_wr #(
    //================
    // wb control
    //================
-   reg wb_ack_reg;
-   assign wb_ack_o = wb_ack_reg;
-   always @(posedge wb_clk_i)
+   reg wbs_ack_reg;
+   assign wbs_ack_o = wbs_ack_reg;
+   always @(posedge wbs_clk_i)
    begin
-      wb_ack_reg <= 1'b0;
-      if (wb_rst_i)
+      wbs_ack_reg <= 1'b0;
+      if (wbs_rst_i)
       begin
        //
       end
       else
       begin
-         if (wb_stb_i && wb_cyc_i)
+         if (wbs_stb_i && wbs_cyc_i)
          begin
-            wb_ack_reg <= 1'b1;
+            wbs_ack_reg <= 1'b1;
          end
       end
    end
@@ -87,33 +87,33 @@ module sw_reg_wr #(
    //================
    // wb write
    //================
-   always @(posedge wb_clk_i)
+   always @(posedge wbs_clk_i)
    begin
       register_doneR  <= register_done;
       register_doneRR <= register_doneR;
       // reset
-      if (wb_rst_i)
+      if (wbs_rst_i)
       begin
          reg_buffer <= 32'd0;
          register_ready <= 1'b0;
       end
       else
       begin
-         if (a_match && wb_stb_i && wb_cyc_i && wb_we_i)
+         if (a_match && wbs_stb_i && wbs_cyc_i && wbs_we_i)
          begin
             register_ready <= 1'b1;
-            case (wb_adr_i[6:2])
+            case (wbs_adr_i[6:2])
                // byte enables
                5'h0:
                begin
-                  if (wb_sel_i[0])
-                     reg_buffer[7:0] <= wb_dat_i[7:0];
-                  if (wb_sel_i[1])
-                     reg_buffer[15:8] <= wb_dat_i[15:8];
-                  if (wb_sel_i[2])
-                     reg_buffer[23:16] <= wb_dat_i[23:16];
-                  if (wb_sel_i[3])
-                     reg_buffer[31:24] <= wb_dat_i[31:24];
+                  if (wbs_sel_i[0])
+                     reg_buffer[7:0] <= wbs_dat_i[7:0];
+                  if (wbs_sel_i[1])
+                     reg_buffer[15:8] <= wbs_dat_i[15:8];
+                  if (wbs_sel_i[2])
+                     reg_buffer[23:16] <= wbs_dat_i[23:16];
+                  if (wbs_sel_i[3])
+                     reg_buffer[31:24] <= wbs_dat_i[31:24];
                end
             endcase
          end
@@ -127,18 +127,18 @@ module sw_reg_wr #(
    //================
    // wb read
    //================
-   reg [31:0] wb_dat_o_reg;
-   assign wb_dat_o = wb_dat_o_reg;
+   reg [31:0] wbs_dat_o_reg;
+   assign wbs_dat_o = wbs_dat_o_reg;
  
    always @(*)
    begin
-      if(~wb_we_i)
+      if(~wbs_we_i)
       begin
-         case (wb_adr_i[6:2])
+         case (wbs_adr_i[6:2])
             5'h0:   
-               wb_dat_o_reg <= reg_buffer;
+               wbs_dat_o_reg <= reg_buffer;
             default:
-               wb_dat_o_reg <= 32'b0;
+               wbs_dat_o_reg <= 32'b0;
          endcase
       end
    end

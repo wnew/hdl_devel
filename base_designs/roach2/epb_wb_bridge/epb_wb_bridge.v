@@ -1,10 +1,10 @@
 `timescale 1ns/10ps
 
 module epb_wb_bridge(
-    wb_clk_i, wb_rst_i,
-    wb_cyc_o, wb_stb_o, wb_we_o, wb_sel_o,
-    wb_adr_o, wb_dat_o, wb_dat_i,
-    wb_ack_i, wb_err_i,
+    wbm_clk_i, wbm_rst_i,
+    wbm_cyc_o, wbm_stb_o, wbm_we_o, wbm_sel_o,
+    wbm_adr_o, wbm_dat_o, wbm_dat_i,
+    wbm_ack_i, wbm_err_i,
 
     epb_clk,
     epb_cs_n, epb_oe_n, epb_r_w_n, epb_be_n, 
@@ -17,13 +17,13 @@ module epb_wb_bridge(
 
   parameter ARCHITECTURE = "BEHAVIORAL";
   
-  input  wb_clk_i, wb_rst_i;
-  output wb_cyc_o, wb_stb_o, wb_we_o;
-  output  [3:0] wb_sel_o;
-  output [31:0] wb_adr_o;
-  output [31:0] wb_dat_o;
-  input  [31:0] wb_dat_i;
-  input  wb_ack_i, wb_err_i;
+  input  wbm_clk_i, wbm_rst_i;
+  output wbm_cyc_o, wbm_stb_o, wbm_we_o;
+  output  [3:0] wbm_sel_o;
+  output [31:0] wbm_adr_o;
+  output [31:0] wbm_dat_o;
+  input  [31:0] wbm_dat_i;
+  input  wbm_ack_i, wbm_err_i;
 
   input  epb_clk;
   input  epb_cs_n, epb_oe_n, epb_r_w_n;
@@ -56,7 +56,7 @@ module epb_wb_bridge(
   /* Command Generation */
   always @(posedge epb_clk) begin
     prev_cs_n <= epb_cs_n;
-    if (wb_rst_i) begin
+    if (wbm_rst_i) begin
       cmnd_got_reg <= 1'b0;
     end else begin
       if (epb_trans) begin
@@ -86,7 +86,7 @@ module epb_wb_bridge(
   always @(posedge epb_clk) begin
     //strobes 
     epb_rdy_int <= 1'b0; /* TODO: add tristate to this ? */
-    if (wb_rst_i) begin
+    if (wbm_rst_i) begin
       resp_ack_reg <= 1'b0;
       epb_data_oen_reg <= 1'b0;
     end else begin
@@ -107,23 +107,23 @@ module epb_wb_bridge(
   end
 
   /**** WishBone Generation ****/
-  reg [31:0] wb_dat_i_reg;
-  assign epb_data_o = wb_dat_i_reg;
-  assign wb_dat_o   = epb_data_i;
+  reg [31:0] wbm_dat_i_reg;
+  assign epb_data_o = wbm_dat_i_reg;
+  assign wbm_dat_o   = epb_data_i;
 
   wire [24:0] epb_addr_fixed = epb_addr;
-  assign wb_adr_o   = {epb_addr_fixed, 2'b0};
-  assign wb_sel_o   = ~epb_be_n;
-  assign wb_we_o    = ~epb_r_w_n;
+  assign wbm_adr_o   = {epb_addr_fixed, 2'b0};
+  assign wbm_sel_o   = ~epb_be_n;
+  assign wbm_we_o    = ~epb_r_w_n;
 
   /* Register Data */
   /*
-  always @(posedge wb_clk_i) begin
-    if (wb_rst_i) begin
-      wb_dat_i_reg <= 32'b0;
+  always @(posedge wbm_clk_i) begin
+    if (wbm_rst_i) begin
+      wbm_dat_i_reg <= 32'b0;
     end else begin
-      if (wb_ack_i || wb_err_i) begin
-        wb_dat_i_reg <= wb_dat_i;
+      if (wbm_ack_i || wbm_err_i) begin
+        wbm_dat_i_reg <= wbm_dat_i;
       end
     end
   end
@@ -131,21 +131,21 @@ module epb_wb_bridge(
 
   /* Command collection */
 
-  reg wb_cyc_o;
-  assign wb_stb_o = wb_cyc_o;
+  reg wbm_cyc_o;
+  assign wbm_stb_o = wbm_cyc_o;
 
   reg cmnd_ack_reg;
   assign cmnd_ack_unstable = cmnd_ack_reg | cmnd_got;
 
-  always @(posedge wb_clk_i) begin
+  always @(posedge wbm_clk_i) begin
     //strobes
-    wb_cyc_o <= 1'b0;
-    if (wb_rst_i) begin
+    wbm_cyc_o <= 1'b0;
+    if (wbm_rst_i) begin
       cmnd_ack_reg <= 1'b0;
     end else begin
       if (cmnd_got) begin
         if (~cmnd_ack_reg) begin //on first
-          wb_cyc_o <= 1'b1;
+          wbm_cyc_o <= 1'b1;
         end
         cmnd_ack_reg <= 1'b1;
       end else begin
@@ -156,16 +156,16 @@ module epb_wb_bridge(
 
   /* Response generation */
   reg resp_got_reg;
-  assign resp_got_unstable = wb_ack_i | resp_got_reg;
+  assign resp_got_unstable = wbm_ack_i | resp_got_reg;
 
-  always @(posedge wb_clk_i) begin
-    if (wb_rst_i) begin
+  always @(posedge wbm_clk_i) begin
+    if (wbm_rst_i) begin
       resp_got_reg <= 1'b0;
-      wb_dat_i_reg <= 32'b0;
+      wbm_dat_i_reg <= 32'b0;
     end else begin
-      if (wb_ack_i || wb_err_i) begin
+      if (wbm_ack_i || wbm_err_i) begin
         resp_got_reg <= 1'b1;
-        wb_dat_i_reg <= wb_dat_i;
+        wbm_dat_i_reg <= wbm_dat_i;
       end
       if (resp_ack) begin
         resp_got_reg <= 1'b0;
@@ -182,13 +182,13 @@ module epb_wb_bridge(
   end
 
   reg resp_ack_retimed;
-  always @(posedge wb_clk_i) begin
+  always @(posedge wbm_clk_i) begin
     resp_ack_retimed <= resp_ack_unstable;
     resp_ack         <= resp_ack_retimed;
   end
 
   reg cmnd_got_retimed;
-  always @(posedge wb_clk_i) begin
+  always @(posedge wbm_clk_i) begin
     cmnd_got_retimed <= cmnd_got_unstable;
     cmnd_got         <= cmnd_got_retimed;
   end

@@ -18,17 +18,17 @@ module sw_reg_wr_tb;
    //=====================
    // local wires & regs
    //=====================
-   reg         wb_clk_i;
-   reg         wb_rst_i;
-   reg         wb_cyc_i;
-   reg         wb_stb_i;
-   reg         wb_we_i;
-   reg   [3:0] wb_sel_i;
-   reg  [31:0] wb_adr_i;
-   reg  [31:0] wb_dat_i;
-   wire [31:0] wb_dat_o;
-   wire        wb_ack_o;
-   wire        wb_err_o;
+   reg         wbs_clk_i;
+   reg         wbs_rst_i;
+   reg         wbs_cyc_i;
+   reg         wbs_stb_i;
+   reg         wbs_we_i;
+   reg   [3:0] wbs_sel_i;
+   reg  [31:0] wbs_adr_i;
+   reg  [31:0] wbs_dat_i;
+   wire [31:0] wbs_dat_o;
+   wire        wbs_ack_o;
+   wire        wbs_err_o;
 
    reg         fabric_clk;
    wire        fabric_data_out;
@@ -41,17 +41,17 @@ module sw_reg_wr_tb;
       .C_BASEADDR (32'h00000000),
       .C_HIGHADDR (32'h0000FFFF)
    ) dut (
-      .wb_clk_i   (wb_clk_i),
-      .wb_rst_i   (wb_rst_i),
-      .wb_cyc_i   (wb_cyc_i),
-      .wb_stb_i   (wb_stb_i),
-      .wb_we_i    (wb_we_i),
-      .wb_sel_i   (wb_sel_i),
-      .wb_adr_i   (wb_adr_i),
-      .wb_dat_i   (wb_dat_i),
-      .wb_dat_o   (wb_dat_o),
-      .wb_ack_o   (wb_ack_o),
-      .wb_err_o   (wb_err_o),
+      .wbs_clk_i   (wbs_clk_i),
+      .wbs_rst_i   (wbs_rst_i),
+      .wbs_cyc_i   (wbs_cyc_i),
+      .wbs_stb_i   (wbs_stb_i),
+      .wbs_we_i    (wbs_we_i),
+      .wbs_sel_i   (wbs_sel_i),
+      .wbs_adr_i   (wbs_adr_i),
+      .wbs_dat_i   (wbs_dat_i),
+      .wbs_dat_o   (wbs_dat_o),
+      .wbs_ack_o   (wbs_ack_o),
+      .wbs_err_o   (wbs_err_o),
    
       .fabric_clk      (fabric_clk),
       .fabric_data_out (fabric_data_out)
@@ -65,8 +65,8 @@ module sw_reg_wr_tb;
    // define what myhdl takes over
    // only if we're running myhdl   
    initial begin
-      $from_myhdl(fabric_clk, wb_clk_i, wb_rst_i, wb_cyc_i, wb_stb_i, wb_we_i, wb_sel_i, wb_adr_i, wb_dat_i);
-      $to_myhdl(fabric_data_in, wb_dat_o,wb_ack_o,wb_err_o);
+      $from_myhdl(fabric_clk, wbs_clk_i, wbs_rst_i, wbs_cyc_i, wbs_stb_i, wbs_we_i, wbs_sel_i, wbs_adr_i, wbs_dat_i);
+      $to_myhdl(fabric_data_in, wbs_dat_o,wbs_ack_o,wbs_err_o);
    end
 `else
 
@@ -78,37 +78,37 @@ module sw_reg_wr_tb;
          $dumpvars;
          fabric_clk = 0;
 
-         wb_clk_i = 0;
-         wb_rst_i = 0;
-         wb_sel_i = 4'hF;
-         wb_stb_i = 1;
-         wb_cyc_i = 1;
-         wb_we_i  = 1;
-         wb_adr_i = 32'h00000000;
-         wb_dat_i = 32'hEEEEEEEE;
+         wbs_clk_i = 0;
+         wbs_rst_i = 0;
+         wbs_sel_i = 4'hF;
+         wbs_stb_i = 1;
+         wbs_cyc_i = 1;
+         wbs_we_i  = 1;
+         wbs_adr_i = 32'h00000000;
+         wbs_dat_i = 32'hEEEEEEEE;
 
          #5 
          
-         wb_stb_i = 0;
-         wb_cyc_i = 0;
+         wbs_stb_i = 0;
+         wbs_cyc_i = 0;
       
          #5
          
-         wb_dat_i = 32'hFFFFEEEE;
-         wb_adr_i = 32'h00000000;
-         wb_stb_i = 1;
-         wb_cyc_i = 1;
+         wbs_dat_i = 32'hFFFFEEEE;
+         wbs_adr_i = 32'h00000000;
+         wbs_stb_i = 1;
+         wbs_cyc_i = 1;
          
          #5 
          
-         wb_stb_i = 0;
-         wb_cyc_i = 0;
+         wbs_stb_i = 0;
+         wbs_cyc_i = 0;
       
          #5
          
-         wb_adr_i = 32'h00000000;
-         wb_stb_i = 1;
-         wb_cyc_i = 1;
+         wbs_adr_i = 32'h00000000;
+         wbs_stb_i = 1;
+         wbs_cyc_i = 1;
          
          #5 $finish;
       end
@@ -118,7 +118,7 @@ module sw_reg_wr_tb;
    //=====================
    always #1
    begin
-      wb_clk_i   = ~wb_clk_i;
+      wbs_clk_i   = ~wbs_clk_i;
       fabric_clk = ~fabric_clk;
    end
 

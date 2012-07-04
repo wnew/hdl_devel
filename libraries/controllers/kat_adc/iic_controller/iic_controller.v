@@ -1,15 +1,15 @@
 `timescale 1ns/1ps
 module iic_controller(
-    input         wb_clk_i,
-    input         wb_rst_i,
-    input         wb_we_i,
-    input         wb_cyc_i,
-    input         wb_stb_i,
-    input  [0:3]  wb_sel_i,
-    input  [0:31] wb_adr_i,
-    input  [0:31] wb_dat_i,
-    output [0:31] wb_dat_o,
-    output        wb_ack_o,
+    input         wbs_clk_i,
+    input         wbs_rst_i,
+    input         wbs_we_i,
+    input         wbs_cyc_i,
+    input         wbs_stb_i,
+    input  [0:3]  wbs_sel_i,
+    input  [0:31] wbs_adr_i,
+    input  [0:31] wbs_dat_i,
+    output [0:31] wbs_dat_o,
+    output        wbs_ack_o,
 
     output        xfer_done,
 
@@ -55,22 +55,22 @@ module iic_controller(
   wire        cpu_op_fifo_block;
   wire        cpu_op_error;
 
-  wb_attach #(
+  wbs_attach #(
     .C_BASEADDR   (C_BASEADDR),
     .C_HIGHADDR   (C_HIGHADDR),
     .C_WB_AWIDTH  (C_WB_AWIDTH),
     .C_WB_DWIDTH  (C_WB_DWIDTH)
-  ) wb_attch_inst (
-    .wb_clk_i        (wb_clk_i),
-    .wb_rst_i        (wb_rst_i),
-    .wb_we_i         (wb_we_i),
-    .wb_cyc_i        (wb_cyc_i),
-    .wb_stb_i        (wb_stb_i),
-    .wb_sel_i        (wb_sel_i),
-    .wb_adr_i        (wb_adr_i),
-    .wb_dat_i        (wb_dat_i),
-    .wb_dat_o        (wb_dat_o),
-    .wb_ack_o        (wb_ack_o),
+  ) wbs_attch_inst (
+    .wbs_clk_i        (wbs_clk_i),
+    .wbs_rst_i        (wbs_rst_i),
+    .wbs_we_i         (wbs_we_i),
+    .wbs_cyc_i        (wbs_cyc_i),
+    .wbs_stb_i        (wbs_stb_i),
+    .wbs_sel_i        (wbs_sel_i),
+    .wbs_adr_i        (wbs_adr_i),
+    .wbs_dat_i        (wbs_dat_i),
+    .wbs_dat_o        (wbs_dat_o),
+    .wbs_ack_o        (wbs_ack_o),
 
     .op_fifo_wr_en   (cpu_op_fifo_wr_en),
     .op_fifo_wr_data (cpu_op_fifo_wr_data),
@@ -93,14 +93,14 @@ module iic_controller(
   reg cpu_op_fifo_empty_z;
   assign xfer_done = cpu_op_fifo_empty && !cpu_op_fifo_empty_z;
 
-  always @(posedge wb_clk_i) begin
+  always @(posedge wbs_clk_i) begin
     cpu_op_fifo_empty_z <= cpu_op_fifo_empty;
   end
 
   /* CPU Fifos */
 
   cpu_op_fifo cpu_op_fifo_inst(
-    .clk      (wb_clk_i),
+    .clk      (wbs_clk_i),
     .din      (cpu_op_fifo_wr_data),
     .rd_en    (cpu_op_fifo_rd_en),
     .rst      (fifo_rst),
@@ -113,7 +113,7 @@ module iic_controller(
   //synthesis attribute BOX_TYPE of cpu_op_fifo_inst is BLACK_BOX
 
   rx_fifo rx_fifo_inst(
-    .clk      (wb_clk_i),
+    .clk      (wbs_clk_i),
     .din      (rx_fifo_wr_data),
     .rd_en    (rx_fifo_rd_en),
     .rst      (fifo_rst),
@@ -160,7 +160,7 @@ generate if (EN_GAIN) begin :GAIN_ENABLE_generate
   
     gain_set gain_set_inst (
       .clk          (app_clk),
-      .rst          (wb_rst_i),
+      .rst          (wbs_rst_i),
       .gain_value   (gain_value),
       .gain_load    (gain_load),
       .trans_vld    (trans_vld),
@@ -182,7 +182,7 @@ generate if (EN_GAIN) begin :GAIN_ENABLE_generate
       .din      (fab_op_fifo_wr_data),
       .wr_en    (fab_op_fifo_wr_en),
   
-      .rd_clk   (wb_clk_i),
+      .rd_clk   (wbs_clk_i),
       .dout     (fab_op_fifo_rd_data),
       .rd_en    (fab_op_fifo_rd_en),
       .empty    (fab_op_fifo_empty),
@@ -222,8 +222,8 @@ endgenerate
 
   reg locked;
 
-  always @(posedge wb_clk_i) begin
-    if (wb_rst_i) begin
+  always @(posedge wbs_clk_i) begin
+    if (wbs_rst_i) begin
       arb_select <= ARB_CPU;
       locked <= 1'b0;
     end else begin
@@ -272,8 +272,8 @@ endgenerate
     .IIC_FREQ  (IIC_FREQ),
     .CORE_FREQ (CORE_FREQ)
   ) miic_ops_inst(
-    .clk        (wb_clk_i),
-    .rst        (wb_rst_i),
+    .clk        (wbs_clk_i),
+    .rst        (wbs_rst_i),
     .op_valid   (op_valid),
     .op_start   (op_start),
     .op_stop    (op_stop),

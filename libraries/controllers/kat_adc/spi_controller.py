@@ -56,6 +56,10 @@ def spi_controller_wrapper (block_name,
    @always(wb_clk_i)
    def logic():
       pass
+ 
+   adc0_adc3wire_clk.driven    = "wire" 
+   adc0_adc3wire_data.driven   = "wire" 
+   adc0_adc3wire_strobe.driven = "wire"
 
    return logic
 
@@ -79,7 +83,7 @@ spi_controller
    .wb_clk_i             ($wb_clk_i),
    .wb_rst_i             ($wb_rst_i),
    .wb_we_i              ($wb_we_i),
-   .wb_cyc_i             ($wb_cyc_i),
+   .wb_cyc_i             ($wb_cyc_i[1]),
    .wb_stb_i             ($wb_stb_i),
    .wb_sel_i             ($wb_sel_i),
    .wb_adr_i             ($wb_adr_i),
