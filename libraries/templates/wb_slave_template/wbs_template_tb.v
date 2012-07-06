@@ -82,7 +82,7 @@ module wbs_template_tb;
          $dumpvars;
 
 
-         // write to the bus
+         // write to the device
          wb_clk_i  = 0;
          wb_rst_i  = 1;
          wbs_sel_i = 4'hA;
@@ -103,7 +103,7 @@ module wbs_template_tb;
 
          #5
          
-         // read from bus
+         // read from device
          wbs_adr_i = 8'h00;
          wbs_stb_i = 1;
          wbs_cyc_i = 1;

@@ -35,7 +35,7 @@ module wbs_template #(
       input                      wbs_cyc_i,
       input                      wbs_stb_i,
       input                      wbs_we_i,
-      input  [BYTE_EN_WIDTH-1:0] wbs_sel_i,
+      input   [BYTE_ENABLES-1:0] wbs_sel_i,
       input [BUS_ADDR_WIDTH-1:0] wbs_adr_i,
       input [BUS_DATA_WIDTH-1:0] wbs_dat_i,
       
@@ -47,13 +47,15 @@ module wbs_template #(
       output reg                      wbs_err_o,
       output reg                      wbs_int_o
    );
-   
+  
+   integer i;
+ 
    //===================
    // local parameters
    //===================
    // byte enable is always the data width/8
    // thus the data width is only able to be multiples of 8
-   localparam BYTE_EN_WIDTH = BUS_DATA_WIDTH / 8;
+   localparam BYTE_ENABLES = BUS_DATA_WIDTH / 8;
    
    //========
    // wires
@@ -63,7 +65,7 @@ module wbs_template #(
    //============
    // registers
    //============
-   reg [BUS_DATA_WIDTH-1:0] reg_buf_i = {BUS_DATA_WIDTH{1'b0}};
+   reg [BUS_DATA_WIDTH-1:0] reg_buf = {BUS_DATA_WIDTH{1'b0}};
 
    //blocks
    always @ (posedge wb_clk_i) begin
@@ -89,17 +91,36 @@ module wbs_template #(
                case (wbs_adr_i - DEV_BASE_ADDR)
                   // writing something to address
                   32'h0: begin
-                     // byte enabled writes
-                     if (wbs_sel_i[0])
-                        reg_buf_i  [7:0] <= wbs_dat_i[7:0];
-                     if (wbs_sel_i[1])
-                        reg_buf_i [15:8] <= wbs_dat_i[15:8];
-                     if (wbs_sel_i[2])
-                        reg_buf_i[23:16] <= wbs_dat_i[23:16];
-                     if (wbs_sel_i[3])
-                        reg_buf_i[31:24] <= wbs_dat_i[31:24];
+                     // byte enabled writes, depending on the data width of the bus
+                     // this isnt able to be done with generate statements as
+                     // cant be used inside always blocks. BLAH!
+                     // these take into account a possible data width of up to 64 bits
+                     if (BYTE_ENABLES >= 1)
+                        if (wbs_sel_i[0])
+                           reg_buf  [7:0] <= wbs_dat_i[7:0];
+                     if (BYTE_ENABLES >= 2)
+                        if (wbs_sel_i[1])
+                           reg_buf [15:8] <= wbs_dat_i[15:8];
+                     if (BYTE_ENABLES >= 3)
+                        if (wbs_sel_i[2])
+                           reg_buf[23:16] <= wbs_dat_i[23:16];
+                     if (BYTE_ENABLES >= 4)
+                        if (wbs_sel_i[3])
+                           reg_buf[31:24] <= wbs_dat_i[31:24];
+                     if (BYTE_ENABLES >= 5)
+                        if (wbs_sel_i[4])
+                           reg_buf[39:32] <= wbs_dat_i[39:32];
+                     if (BYTE_ENABLES >= 6)
+                        if (wbs_sel_i[5])
+                           reg_buf[47:40] <= wbs_dat_i[47:40];
+                     if (BYTE_ENABLES >= 7)
+                        if (wbs_sel_i[6])
+                           reg_buf[55:48] <= wbs_dat_i[55:48];
+                     if (BYTE_ENABLES >= 8)
+                        if (wbs_sel_i[7])
+                           reg_buf[63:56] <= wbs_dat_i[63:56];
    
-                     $display("user wrote %h", reg_buf_i);
+                     $display("user wrote %h", reg_buf);
                   end
                   //add as many addresses as you need here
                   default: begin
@@ -115,8 +136,8 @@ module wbs_template #(
                case (wbs_adr_i)
                   32'h0: begin
                      //reading something from address 0
-                     $display("user read %h", reg_buf_i);
-                     wbs_dat_o <= reg_buf_i;
+                     $display("user read %h", reg_buf);
+                     wbs_dat_o <= reg_buf;
                   end
                   //add as many addresses as you need here
                   default: begin
