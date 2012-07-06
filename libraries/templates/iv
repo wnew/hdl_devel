@@ -1,0 +1,4 @@
+iverilog wbs_template.v wbs_template_tb.v -o ./gen/wbs_template.o
+cd gen
+./wbs_template.o
+cd ..
