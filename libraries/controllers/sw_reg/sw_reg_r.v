@@ -23,143 +23,146 @@ module sw_reg_r #(
       //=============
       // parameters
       //=============
-      parameter C_BASEADDR       = 32'h00000000,
-      parameter C_HIGHADDR       = 32'h0000000F,
-      parameter C_BUS_DATA_WIDTH = 32,
-      parameter C_BUS_ADDR_WIDTH = 5,
-      parameter C_BYTE_EN_WIDTH  = 4
+      parameter DEV_BASE_ADDR  = {BUS_ADDR_WIDTH{1'b0}}, // default 32'h0
+      parameter DEV_HIGH_ADDR  = {{(BUS_ADDR_WIDTH-4){1'b0}}, 4'hF}, // default 32'h000000EE
+      parameter BUS_DATA_WIDTH = 32,  // default is 32. but can be 8, 16, 32, 64
+      parameter BUS_ADDR_WIDTH = 8    // default is 8.  but can be 4, 8, 16, 32
    ) (
       //===============
       // fabric ports
       //===============
-      input        fabric_clk,
-      input [31:0] fabric_data_in,
+      input        fabric_clk_i,
+      input [31:0] fabric_data_i,
       
       //============
       // wb inputs
       //============
-      input        wbs_clk_i,
-      input        wbs_rst_i,
-      input        wbs_cyc_i,
-      input        wbs_stb_i,
-      input        wbs_we_i,
-      input  [3:0] wbs_sel_i,
-      input [31:0] wbs_adr_i,
-      input [31:0] wbs_dat_i,
+      input                      wb_clk_i,
+      input                      wb_rst_i,
+      input                      wbs_cyc_i,
+      input                      wbs_stb_i,
+      input                      wbs_we_i,
+      input   [BYTE_ENABLES-1:0] wbs_sel_i,
+      input [BUS_ADDR_WIDTH-1:0] wbs_adr_i,
+      input [BUS_DATA_WIDTH-1:0] wbs_dat_i,
       
       //=============
       // wb outputs
       //=============
-      output reg [31:0] wbs_dat_o,
-      output reg        wbs_ack_o,
-      output reg        wbs_err_o
+      output reg [BUS_DATA_WIDTH-1:0] wbs_dat_o,
+      output reg                      wbs_ack_o,
+      output reg                      wbs_err_o,
+      output reg                      wbs_int_o
    );
- 
-   wire a_match = wbs_adr_i >= C_BASEADDR && wbs_adr_i <= C_HIGHADDR;
- 
-   reg [31:0] fabric_data_in_reg;
    
-   //==================
-   // register buffer 
-   //==================
-   reg [31:0] reg_buffer;
- 
-   //=============
-   // wb control
-   //=============
-   always @(posedge wbs_clk_i)
-   begin
-      register_readyR  <= register_ready;
-      register_readyRR <= register_readyR;
-      
-      wbs_ack_o <= 1'b0;
-      if (wbs_rst_i)
-      begin
-         register_request <= 1'b0;
-      end
-      else
-      begin
-         if (wbs_stb_i && wbs_cyc_i)
-         begin
-            wbs_ack_o <= 1'b1;
-         end
-      end
-      if (register_readyRR)
-      begin
-         register_request <= 1'b0;
-      end
-      if (register_readyRR && register_request)
-      begin
-         reg_buffer <= fabric_data_in_reg;
-      end
- 
-      if (!register_readyRR)
-      begin
-         /* always request the buffer */
-         register_request <= 1'b1;
-      end
-   end
- 
-   //==========
-   // wb read
-   //==========
-   always @(*)
-   begin
-      if (wbs_rst_i)
-      begin
-         register_request <= 1'b0;
-      end
-      if(~wbs_we_i)
-      begin
-         case (wbs_adr_i[6:2])
-            // Check if this works, it should depend on the spacings between devices on the bus,
-            // otherwise just check if the address is in range and dont worry about the case statement
-            // blah blah
-            5'h0:   
-            begin   
-               wbs_dat_o <= reg_buffer;
-            end
-            default:
-            begin
-               wbs_dat_o <= 32'b0;
-            end
-         endcase
-      end
-   end
+   //===================
+   // local parameters
+   //===================
+   // byte enable is always the data width/8
+   // thus the data width is only able to be multiples of 8
+   localparam BYTE_ENABLES = BUS_DATA_WIDTH / 8;
    
-   //===============
-   // fabric write
-   //===============
-   /* Handshake signal from wb to application indicating new data should be latched */
-   reg register_request;
-   reg register_requestR;
-   reg register_requestRR;
-   /* Handshake signal from application to wb indicating data has been latched */
+   //========
+   // wires
+   //========
+   wire adr_match = wbs_adr_i >= DEV_BASE_ADDR && wbs_adr_i <= DEV_HIGH_ADDR;
+
+   //============
+   // registers
+   //============
+   reg [BUS_DATA_WIDTH-1:0] fabric_data_i_reg;
+   reg [BUS_DATA_WIDTH-1:0] reg_buf = {BUS_DATA_WIDTH{1'b0}};
+
+   // Handshake signal from WB to application indicating data is ready to be latched
    reg register_ready;
    reg register_readyR;
    reg register_readyRR;
-   
-   always @(posedge fabric_clk)
+   // Handshake signal from application to WB indicating data has been latched
+   reg register_request;
+   reg register_requestR;
+   reg register_requestRR;
+
+   //===============
+   // fabric logic
+   //===============
+   always @(posedge fabric_clk_i)
    begin
+      // registering for clock domain crossing  
       register_requestR  <= register_request;
       register_requestRR <= register_requestR;
-      //register_readyR    <= register_ready;
-      //register_readyRR   <= register_readyR;
- 
+
       if (register_requestRR)
       begin
          register_ready <= 1'b1;
       end
- 
+
       if (!register_requestRR)
       begin
          register_ready <= 1'b0;
       end
- 
       if (register_requestRR && !register_ready)
       begin
          register_ready <= 1'b1;
-         fabric_data_in_reg <= fabric_data_in;
+         fabric_data_i_reg = fabric_data_i;
+         //$display("fabric data read %h", fabric_data_i);
+      end
+   end
+
+   //=================
+   // wishbone logic
+   //=================
+   always @ (posedge wb_clk_i) begin
+      register_readyR  <= register_ready;
+      register_readyRR <= register_readyR;
+     
+      if (register_readyRR) begin
+         register_request <= 1'b0;
+      end
+
+      if (register_readyRR && register_request) begin
+         /* only latch the data when the buffer is not locked */
+         reg_buf <= fabric_data_i_reg;
+      end
+
+      if (!register_readyRR) begin
+         /* always request the buffer */
+         register_request <= 1'b1;
+      end
+
+      // reset logic 
+      if (wb_rst_i) begin
+         wbs_dat_o <= {BUS_DATA_WIDTH{1'b0}};
+         wbs_ack_o <= 0;
+         wbs_err_o <= 0;
+         wbs_int_o <= 0;
+         register_request <= 1'b0;
+      end
+      else begin
+         // when the master acks our ack, then put our ack down
+         if (wbs_ack_o & ~wbs_stb_i) begin
+            wbs_ack_o <= 0;
+         end
+         // master is requesting somethign
+         if (adr_match & wbs_stb_i & wbs_cyc_i) begin
+            //===============
+            // read request
+            //===============
+            if (~wbs_we_i)
+            begin 
+               case (wbs_adr_i)
+                  32'h0: begin
+                     //reading something from address 0
+                     //$display("user read %h", reg_buf);
+                     wbs_dat_o <= reg_buf;
+                  end
+                  //add as many addresses as you need here
+                  default: begin
+                     //$display("no case for read address %h", wbs_adr_i);
+                  end
+               endcase
+            end
+            wbs_ack_o <= 1;
+         end
       end
    end
 endmodule
