@@ -1,251 +1,235 @@
+//============================================================================//
+//                                                                            //
+//      Parameterize Wishbone Slave Template                                  //
+//                                                                            //
+//      Module name: wbs_template                                             //
+//      Desc: parameterized wishbone slave template, with byte enables and    //
+//            parameterized address and data widths.                          //
+//      Date: July 2012                                                       //
+//      Developer: Wesley New                                                 //
+//      Licence: GNU General Public License ver 3                             //
+//      Notes:                                                                //
+//                                                                            //
+//============================================================================//
+
 module sys_block #(
-    parameter     BOARD_ID = 32'h0,
-    parameter     REV_MAJ  = 32'h0,
-    parameter     REV_MIN  = 32'h0,
-    parameter     REV_RCS  = 32'h0
-  )  (
-    input         wbs_clk_i,
-    input         wbs_rst_i,
-    input         wbs_cyc_i,
-    input         wbs_stb_i,
-    input         wbs_we_i,
-    input   [3:0] wbs_sel_i,
-    input  [31:0] wbs_adr_i,
-    input  [31:0] wbs_dat_i,
-    output [31:0] wbs_dat_o,
-    output        wbs_ack_o,
-    output        wbs_err_o
+      //=============
+      // parameters
+      //=============
+      parameter DEV_BASE_ADDR  = {BUS_ADDR_WIDTH{1'b0}}, // default 32'h0
+      parameter DEV_HIGH_ADDR  = {{(BUS_ADDR_WIDTH-4){1'b0}}, 4'hF}, // default 32'h000000EE
+      parameter BUS_DATA_WIDTH = 32,  // default is 32. but can be 8, 16, 32, 64
+      parameter BUS_ADDR_WIDTH = 8,   // default is 8.  but can be 4, 8, 16, 32
+      parameter BOARD_ID       = 32'h0,
+      parameter REV_MAJ        = 32'h0,
+      parameter REV_MIN        = 32'h0,
+      parameter REV_RCS        = 32'h0
 
-    //input         debug_clk,
-    //input  [31:0] regin_0,
-    //input  [31:0] regin_1,
-    //input  [31:0] regin_2,
-    //input  [31:0] regin_3,
-    //input  [31:0] regin_4,
-    //input  [31:0] regin_5,
-    //input  [31:0] regin_6,
-    //input  [31:0] regin_7,
+   ) (
+      //============
+      // wb inputs
+      //============
+      input                      wb_clk_i,
+      input                      wb_rst_i,
+      input                      wbs_cyc_i,
+      input                      wbs_stb_i,
+      input                      wbs_we_i,
+      input   [BYTE_ENABLES-1:0] wbs_sel_i,
+      input [BUS_ADDR_WIDTH-1:0] wbs_adr_i,
+      input [BUS_DATA_WIDTH-1:0] wbs_dat_i,
+      
+      //=============
+      // wb outputs
+      //=============
+      output reg [BUS_DATA_WIDTH-1:0] wbs_dat_o,
+      output reg                      wbs_ack_o,
+      output reg                      wbs_err_o,
+      output reg                      wbs_int_o
+   );
+  
+   integer i;
+ 
+   //===================
+   // local parameters
+   //===================
+   // byte enable is always the data width/8
+   // thus the data width is only able to be multiples of 8
+   localparam BYTE_ENABLES = BUS_DATA_WIDTH / 8;
+   
+   //========
+   // wires
+   //========
+   wire adr_match = wbs_adr_i >= DEV_BASE_ADDR && wbs_adr_i <= DEV_HIGH_ADDR;
 
-    //output [31:0] regout_0,
-    //output [31:0] regout_1,
-    //output [31:0] regout_2,
-    //output [31:0] regout_3,
-    //output [31:0] regout_4,
-    //output [31:0] regout_5,
-    //output [31:0] regout_6,
-    //output [31:0] regout_7
-  );
-
-  /* latch data in */
-  //reg [31:0] regin_0_R;
-  //reg [31:0] regin_1_R;
-  //reg [31:0] regin_2_R;
-  //reg [31:0] regin_3_R;
-  //reg [31:0] regin_4_R;
-  //reg [31:0] regin_5_R;
-  //reg [31:0] regin_6_R;
-  //reg [31:0] regin_7_R;
-  //reg [31:0] regin_0_RR;
-  //reg [31:0] regin_1_RR;
-  //reg [31:0] regin_2_RR;
-  //reg [31:0] regin_3_RR;
-  //reg [31:0] regin_4_RR;
-  //reg [31:0] regin_5_RR;
-  //reg [31:0] regin_6_RR;
-  //reg [31:0] regin_7_RR;
-
-  //always @(posedge wbs_clk_i) begin
-  //  regin_0_R <= regin_0;
-  //  regin_1_R <= regin_1;
-  //  regin_2_R <= regin_2;
-  //  regin_3_R <= regin_3;
-  //  regin_4_R <= regin_4;
-  //  regin_5_R <= regin_5;
-  //  regin_6_R <= regin_6;
-  //  regin_7_R <= regin_7;
-  //  regin_0_RR<= regin_0_R;
-  //  regin_1_RR<= regin_1_R;
-  //  regin_2_RR<= regin_2_R;
-  //  regin_3_RR<= regin_3_R;
-  //  regin_4_RR<= regin_4_R;
-  //  regin_5_RR<= regin_5_R;
-  //  regin_6_RR<= regin_6_R;
-  //  regin_7_RR<= regin_7_R;
-  //end
-
-  ///* latch data out */
-  //reg [31:0] regout_0_reg;
-  //reg [31:0] regout_1_reg;
-  //reg [31:0] regout_2_reg;
-  //reg [31:0] regout_3_reg;
-  //reg [31:0] regout_4_reg;
-  //reg [31:0] regout_5_reg;
-  //reg [31:0] regout_6_reg;
-  //reg [31:0] regout_7_reg;
-
-  //reg [31:0] regout_0_R;
-  //reg [31:0] regout_1_R;
-  //reg [31:0] regout_2_R;
-  //reg [31:0] regout_3_R;
-  //reg [31:0] regout_4_R;
-  //reg [31:0] regout_5_R;
-  //reg [31:0] regout_6_R;
-  //reg [31:0] regout_7_R;
-  //reg [31:0] regout_0_RR;
-  //reg [31:0] regout_1_RR;
-  //reg [31:0] regout_2_RR;
-  //reg [31:0] regout_3_RR;
-  //reg [31:0] regout_4_RR;
-  //reg [31:0] regout_5_RR;
-  //reg [31:0] regout_6_RR;
-  //reg [31:0] regout_7_RR;
-
-  //always @(posedge debug_clk) begin
-  //  regout_0_R <= regout_0_reg;
-  //  regout_1_R <= regout_1_reg;
-  //  regout_2_R <= regout_2_reg;
-  //  regout_3_R <= regout_3_reg;
-  //  regout_4_R <= regout_4_reg;
-  //  regout_5_R <= regout_5_reg;
-  //  regout_6_R <= regout_6_reg;
-  //  regout_7_R <= regout_7_reg;
-
-  //  regout_0_RR<= regout_0_R;
-  //  regout_1_RR<= regout_1_R;
-  //  regout_2_RR<= regout_2_R;
-  //  regout_3_RR<= regout_3_R;
-  //  regout_4_RR<= regout_4_R;
-  //  regout_5_RR<= regout_5_R;
-  //  regout_6_RR<= regout_6_R;
-  //  regout_7_RR<= regout_7_R;
-  //end
-
-  //assign regout_0 = regout_0_RR;
-  //assign regout_1 = regout_1_RR;
-  //assign regout_2 = regout_2_RR;
-  //assign regout_3 = regout_3_RR;
-  //assign regout_4 = regout_4_RR;
-  //assign regout_5 = regout_5_RR;
-  //assign regout_6 = regout_6_RR;
-  //assign regout_7 = regout_7_RR;
-
-  reg [31:0] scratchpad [3:0];
-
-  reg wbs_ack_reg;
-  assign wbs_ack_o = wbs_ack_reg;
-  always @(posedge wbs_clk_i) begin
-    wbs_ack_reg <= 1'b0;
-    if (wbs_rst_i) begin
-    end else begin
-      if (wbs_stb_i && wbs_cyc_i) begin
-        wbs_ack_reg <= 1'b1;
+   //============
+   // registers
+   //============
+   reg [BUS_DATA_WIDTH-1:0] scratchpad [3:0];
+   //blocks
+   always @ (posedge wb_clk_i) begin
+      // reset logic
+      if (wb_rst_i) begin
+         wbs_dat_o <= {BUS_DATA_WIDTH{1'b0}};
+         wbs_ack_o <= 0;
+         wbs_int_o <= 0;
       end
-    end
-  end
-
-  /* wb write */
-  always @(posedge wbs_clk_i) begin
-    if (wbs_rst_i) begin
-      //regout_0_reg <= 32'd0;
-      //regout_1_reg <= 32'd0;
-      //regout_2_reg <= 32'd0;
-      //regout_3_reg <= 32'd0;
-      //regout_4_reg <= 32'd0;
-      //regout_5_reg <= 32'd0;
-      //regout_6_reg <= 32'd0;
-      //regout_7_reg <= 32'd0;
-    end else begin
-      if (wbs_stb_i && wbs_cyc_i && wbs_we_i) begin
-        case (wbs_adr_i[6:2])
-          /* TODO: add byte enables to test */
-          5'h4: begin
-            if (wbs_sel_i[0])
-              scratchpad[0][7:0] <= wbs_dat_i[7:0];
-            if (wbs_sel_i[1])
-              scratchpad[0][15:8] <= wbs_dat_i[15:8];
-            if (wbs_sel_i[2])
-              scratchpad[0][23:16] <= wbs_dat_i[23:16];
-            if (wbs_sel_i[3])
-              scratchpad[0][31:24] <= wbs_dat_i[31:24];
-          end
-          5'h5: begin
-            if (wbs_sel_i[0])
-              scratchpad[1][7:0] <= wbs_dat_i[7:0];
-            if (wbs_sel_i[1])
-              scratchpad[1][15:8] <= wbs_dat_i[15:8];
-            if (wbs_sel_i[2])
-              scratchpad[1][23:16]<= wbs_dat_i[23:16];
-            if (wbs_sel_i[3])
-              scratchpad[1][31:24] <= wbs_dat_i[31:24];
-          end
-          5'h6: begin
-            if (wbs_sel_i[0])
-              scratchpad[2][7:0] <= wbs_dat_i[7:0];
-            if (wbs_sel_i[1])
-              scratchpad[2][15:8] <= wbs_dat_i[15:8];
-            if (wbs_sel_i[2])
-              scratchpad[2][23:16] <= wbs_dat_i[23:16];
-            if (wbs_sel_i[3])
-              scratchpad[2][31:24] <= wbs_dat_i[31:24];
-          end
-          5'h7: begin
-            if (wbs_sel_i[0])
-              scratchpad[3][7:0] <= wbs_dat_i[7:0];
-            if (wbs_sel_i[1])
-              scratchpad[3][15:8] <= wbs_dat_i[15:8];
-            if (wbs_sel_i[2])
-              scratchpad[3][23:16] <= wbs_dat_i[23:16];
-            if (wbs_sel_i[3])
-              scratchpad[3][31:24] <= wbs_dat_i[31:24];
-          end
-          //5'h10: regout_0_reg <= wbs_dat_i;
-          //5'h11: regout_1_reg <= wbs_dat_i;
-          //5'h12: regout_2_reg <= wbs_dat_i;
-          //5'h13: regout_3_reg <= wbs_dat_i;
-          //5'h14: regout_4_reg <= wbs_dat_i;
-          //5'h15: regout_5_reg <= wbs_dat_i;
-          //5'h16: regout_6_reg <= wbs_dat_i;
-          //5'h17: regout_7_reg <= wbs_dat_i;
-        endcase
+   
+      else begin
+         // when the master acks our ack, then put our ack down
+         if (wbs_ack_o & ~wbs_stb_i) begin
+            wbs_ack_o <= 0;
+         end
+         // master is requesting somethign
+         if (adr_match & wbs_stb_i & wbs_cyc_i) begin
+            wbs_dat_o <= wbs_dat_o_reg;
+            //================
+            // write request
+            //================
+            if (wbs_we_i) begin
+               // bring the address down to the base address
+               case (wbs_adr_i - DEV_BASE_ADDR)
+                  // writing something to address
+                  32'h4: begin
+                     // byte enabled writes, depending on the data width of the bus
+                     // this isnt able to be done with generate statements as
+                     // cant be used inside always blocks. BLAH!
+                     // these take into account a possible data width of up to 64 bits
+                     if (BYTE_ENABLES >= 1)
+                        if (wbs_sel_i[0])
+                           scratchpad[0][7:0] <= wbs_dat_i[7:0];
+                     if (BYTE_ENABLES >= 2)
+                        if (wbs_sel_i[1])
+                           scratchpad[0] [15:8] <= wbs_dat_i[15:8];
+                     if (BYTE_ENABLES >= 3)
+                        if (wbs_sel_i[2])
+                           scratchpad[0][23:16] <= wbs_dat_i[23:16];
+                     if (BYTE_ENABLES >= 4)
+                        if (wbs_sel_i[3])
+                           scratchpad[0][31:24] <= wbs_dat_i[31:24];
+                     if (BYTE_ENABLES >= 5)
+                        if (wbs_sel_i[4])
+                           scratchpad[0][39:32] <= wbs_dat_i[39:32];
+                     if (BYTE_ENABLES >= 6)
+                        if (wbs_sel_i[5])
+                           scratchpad[0][47:40] <= wbs_dat_i[47:40];
+                     if (BYTE_ENABLES >= 7)
+                        if (wbs_sel_i[6])
+                           scratchpad[0][55:48] <= wbs_dat_i[55:48];
+                     if (BYTE_ENABLES >= 8)
+                        if (wbs_sel_i[7])
+                           scratchpad[0][63:56] <= wbs_dat_i[63:56];
+                  end
+                  32'h5: begin
+                     if (BYTE_ENABLES >= 1)
+                        if (wbs_sel_i[0])
+                           scratchpad[1]  [7:0] <= wbs_dat_i[7:0];
+                     if (BYTE_ENABLES >= 2)
+                        if (wbs_sel_i[1])
+                           scratchpad[1] [15:8] <= wbs_dat_i[15:8];
+                     if (BYTE_ENABLES >= 3)
+                        if (wbs_sel_i[2])
+                           scratchpad[1][23:16] <= wbs_dat_i[23:16];
+                     if (BYTE_ENABLES >= 4)
+                        if (wbs_sel_i[3])
+                           scratchpad[1][31:24] <= wbs_dat_i[31:24];
+                     if (BYTE_ENABLES >= 5)
+                        if (wbs_sel_i[4])
+                           scratchpad[1][39:32] <= wbs_dat_i[39:32];
+                     if (BYTE_ENABLES >= 6)
+                        if (wbs_sel_i[5])
+                           scratchpad[1][47:40] <= wbs_dat_i[47:40];
+                     if (BYTE_ENABLES >= 7)
+                        if (wbs_sel_i[6])
+                           scratchpad[1][55:48] <= wbs_dat_i[55:48];
+                     if (BYTE_ENABLES >= 8)
+                        if (wbs_sel_i[7])
+                           scratchpad[1][63:56] <= wbs_dat_i[63:56];
+                  end
+                  32'h6: begin
+                     if (BYTE_ENABLES >= 1)
+                        if (wbs_sel_i[0])
+                           scratchpad[2]  [7:0] <= wbs_dat_i[7:0];
+                     if (BYTE_ENABLES >= 2)
+                        if (wbs_sel_i[1])
+                           scratchpad[2] [15:8] <= wbs_dat_i[15:8];
+                     if (BYTE_ENABLES >= 3)
+                        if (wbs_sel_i[2])
+                           scratchpad[2][23:16] <= wbs_dat_i[23:16];
+                     if (BYTE_ENABLES >= 4)
+                        if (wbs_sel_i[3])
+                           scratchpad[2][31:24] <= wbs_dat_i[31:24];
+                     if (BYTE_ENABLES >= 5)
+                        if (wbs_sel_i[4])
+                           scratchpad[2][39:32] <= wbs_dat_i[39:32];
+                     if (BYTE_ENABLES >= 6)
+                        if (wbs_sel_i[5])
+                           scratchpad[2][47:40] <= wbs_dat_i[47:40];
+                     if (BYTE_ENABLES >= 7)
+                        if (wbs_sel_i[6])
+                           scratchpad[2][55:48] <= wbs_dat_i[55:48];
+                     if (BYTE_ENABLES >= 8)
+                        if (wbs_sel_i[7])
+                           scratchpad[2][63:56] <= wbs_dat_i[63:56];
+                  end
+                  32'h7: begin
+                     if (BYTE_ENABLES >= 1)
+                        if (wbs_sel_i[0])
+                           scratchpad[3]  [7:0] <= wbs_dat_i[7:0];
+                     if (BYTE_ENABLES >= 2)
+                        if (wbs_sel_i[1])
+                           scratchpad[3] [15:8] <= wbs_dat_i[15:8];
+                     if (BYTE_ENABLES >= 3)
+                        if (wbs_sel_i[2])
+                           scratchpad[3][23:16] <= wbs_dat_i[23:16];
+                     if (BYTE_ENABLES >= 4)
+                        if (wbs_sel_i[3])
+                           scratchpad[3][31:24] <= wbs_dat_i[31:24];
+                     if (BYTE_ENABLES >= 5)
+                        if (wbs_sel_i[4])
+                           scratchpad[3][39:32] <= wbs_dat_i[39:32];
+                     if (BYTE_ENABLES >= 6)
+                        if (wbs_sel_i[5])
+                           scratchpad[3][47:40] <= wbs_dat_i[47:40];
+                     if (BYTE_ENABLES >= 7)
+                        if (wbs_sel_i[6])
+                           scratchpad[3][55:48] <= wbs_dat_i[55:48];
+                     if (BYTE_ENABLES >= 8)
+                        if (wbs_sel_i[7])
+                           scratchpad[3][63:56] <= wbs_dat_i[63:56];
+                     end
+   
+                  //add as many addresses as you need here
+                  default: begin
+                  end
+               endcase
+            end
+            
+            //===============
+            // read request
+            //===============
+            else begin 
+               case (wbs_adr_i - DEV_BASE_ADDR)
+		  32'h0:   wbs_dat_o_reg <= BOARD_ID;
+		  32'h1:   wbs_dat_o_reg <= REV_MAJ;
+		  32'h2:   wbs_dat_o_reg <= REV_MIN;
+		  32'h3:   wbs_dat_o_reg <= REV_RCS;
+		  32'h4:   wbs_dat_o_reg <= scratchpad[0];
+		  32'h5:   wbs_dat_o_reg <= scratchpad[1];
+		  32'h6:   wbs_dat_o_reg <= scratchpad[2];
+		  32'h7:   wbs_dat_o_reg <= scratchpad[3];
+                  //add as many addresses as you need here
+                  default: begin
+                     wbs_dat_o_reg <= 32'b0;
+                  end
+               endcase
+            end
+            wbs_ack_o <= 1;
+         end
+         // if not (adr_match, wbs_cyc_i or wb_stb_i) release the Kraken!... I mean the data_o port
+         else
+            wbs_dat_o = 32'hxxxxxxxx;
       end
-    end
-  end
-
-  /* wb read */
-
-  reg [31:0] wbs_dat_o_reg;
-  assign wbs_dat_o = wbs_dat_o_reg;
-
-  always @(*) begin
-    case (wbs_adr_i[6:2])
-      5'h0:   wbs_dat_o_reg <= BOARD_ID;
-      5'h1:   wbs_dat_o_reg <= REV_MAJ;
-      5'h2:   wbs_dat_o_reg <= REV_MIN;
-      5'h3:   wbs_dat_o_reg <= REV_RCS;
-      5'h4:   wbs_dat_o_reg <= scratchpad[0];
-      5'h5:   wbs_dat_o_reg <= scratchpad[1];
-      5'h6:   wbs_dat_o_reg <= scratchpad[2];
-      5'h7:   wbs_dat_o_reg <= scratchpad[3];
-      //5'h8:   wbs_dat_o_reg <= regin_0_RR;
-      //5'h9:   wbs_dat_o_reg <= regin_1_RR;
-      //5'ha:   wbs_dat_o_reg <= regin_2_RR;
-      //5'hb:   wbs_dat_o_reg <= regin_3_RR;
-      //5'hc:   wbs_dat_o_reg <= regin_4_RR;
-      //5'hd:   wbs_dat_o_reg <= regin_5_RR;
-      //5'he:   wbs_dat_o_reg <= regin_6_RR;
-      //5'hf:   wbs_dat_o_reg <= regin_7_RR;
-      //5'h10:  wbs_dat_o_reg <= regout_0_reg;
-      //5'h11:  wbs_dat_o_reg <= regout_1_reg;
-      //5'h12:  wbs_dat_o_reg <= regout_2_reg;
-      //5'h13:  wbs_dat_o_reg <= regout_3_reg;
-      //5'h14:  wbs_dat_o_reg <= regout_4_reg;
-      //5'h15:  wbs_dat_o_reg <= regout_5_reg;
-      //5'h16:  wbs_dat_o_reg <= regout_6_reg;
-      //5'h17:  wbs_dat_o_reg <= regout_7_reg;
-      default:
-              wbs_dat_o_reg <= 32'b0;
-        
-    endcase
-  end
-
+   end
+   reg [BUS_DATA_WIDTH-1:0] wbs_dat_o_reg;
+   //assign wbs_dat_o = wbs_dat_o_reg;
 endmodule

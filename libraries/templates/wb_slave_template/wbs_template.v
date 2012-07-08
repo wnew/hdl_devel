@@ -147,6 +147,9 @@ module wbs_template #(
             end
             wbs_ack_o <= 1;
          end
+         // if not (adr_match, wbs_cyc_i or wb_stb_i) release the Kraken!... I mean the data_o port
+         else
+            wbs_dat_o = 32'hxxxxxxxx;
       end
    end
 endmodule
