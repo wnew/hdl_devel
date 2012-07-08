@@ -209,14 +209,14 @@ module sys_block #(
             //===============
             else begin 
                case (wbs_adr_i - DEV_BASE_ADDR)
-		  32'h0:   wbs_dat_o_reg <= BOARD_ID;
-		  32'h1:   wbs_dat_o_reg <= REV_MAJ;
-		  32'h2:   wbs_dat_o_reg <= REV_MIN;
-		  32'h3:   wbs_dat_o_reg <= REV_RCS;
-		  32'h4:   wbs_dat_o_reg <= scratchpad[0];
-		  32'h5:   wbs_dat_o_reg <= scratchpad[1];
-		  32'h6:   wbs_dat_o_reg <= scratchpad[2];
-		  32'h7:   wbs_dat_o_reg <= scratchpad[3];
+                  32'h0:   wbs_dat_o_reg <= BOARD_ID;
+                  32'h1:   wbs_dat_o_reg <= REV_MAJ;
+                  32'h2:   wbs_dat_o_reg <= REV_MIN;
+                  32'h3:   wbs_dat_o_reg <= REV_RCS;
+                  32'h4:   wbs_dat_o_reg <= scratchpad[0];
+                  32'h5:   wbs_dat_o_reg <= scratchpad[1];
+                  32'h6:   wbs_dat_o_reg <= scratchpad[2];
+                  32'h7:   wbs_dat_o_reg <= scratchpad[3];
                   //add as many addresses as you need here
                   default: begin
                      wbs_dat_o_reg <= 32'b0;
