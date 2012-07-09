@@ -227,7 +227,7 @@ module sys_block #(
          end
          // if not (adr_match, wbs_cyc_i or wb_stb_i) release the Kraken!... I mean the data_o port
          else
-            wbs_dat_o = 32'hxxxxxxxx;
+            wbs_dat_o = 32'bz;
       end
    end
    reg [BUS_DATA_WIDTH-1:0] wbs_dat_o_reg;

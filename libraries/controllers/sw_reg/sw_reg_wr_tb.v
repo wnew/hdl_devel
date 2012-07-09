@@ -110,7 +110,7 @@ module sw_reg_wr_tb;
          wbs_cyc_i = 1;
          wbs_we_i  = 0;
 
-         #3
+         #5
          
          wbs_stb_i = 0;
 
