@@ -1,39 +1,40 @@
-`timescale 1ns/10ps
+module epb_wb_bridge #(
+      //=============
+      // parameters
+      //=============
+      parameter ARCHITECTURE = "BEHAVIORAL",
+      parameter BUS_DATA_WIDTH = 32,  // default is 32. but can be 8, 16, 32, 64
+      parameter BUS_ADDR_WIDTH = 32   // default is 8.  but can be 4, 8, 16, 32
+   ) (
+      //===========
+      // wb ports
+      //===========
+      input                       wb_clk_i,
+      input                       wb_rst_i,
+      output                      wbm_cyc_o,
+      output                      wbm_stb_o,
+      output                      wbm_we_o,
+      output                [3:0] wbm_sel_o,
+      output [BUS_ADDR_WIDTH-1:0] wbm_adr_o,
+      output [BUS_DATA_WIDTH-1:0] wbm_dat_o,
+      input  [BUS_DATA_WIDTH-1:0] wbm_dat_i,
+      input                       wbm_ack_i,
+      input                       wbm_err_i,
+      input                       wbm_int_i,
 
-module epb_wb_bridge(
-    wbm_clk_i, wbm_rst_i,
-    wbm_cyc_o, wbm_stb_o, wbm_we_o, wbm_sel_o,
-    wbm_adr_o, wbm_dat_o, wbm_dat_i,
-    wbm_ack_i, wbm_err_i,
-
-    epb_clk,
-    epb_cs_n, epb_oe_n, epb_r_w_n, epb_be_n, 
-    epb_addr,
-    epb_data_i, epb_data_o,
-    epb_data_oe_n,
-    epb_rdy,
-    epb_doen
+      input         epb_clk,
+      input         epb_cs_n,
+      input         epb_oe_n,
+      input         epb_r_w_n,
+      input   [3:0] epb_be_n,
+      input  [5:29] epb_addr,
+      input  [0:31] epb_data_i,
+      output [0:31] epb_data_o,
+      output        epb_data_oe_n,
+      output        epb_rdy,
+      output        epb_doen
   );
 
-  parameter ARCHITECTURE = "BEHAVIORAL";
-  
-  input  wbm_clk_i, wbm_rst_i;
-  output wbm_cyc_o, wbm_stb_o, wbm_we_o;
-  output  [3:0] wbm_sel_o;
-  output [31:0] wbm_adr_o;
-  output [31:0] wbm_dat_o;
-  input  [31:0] wbm_dat_i;
-  input  wbm_ack_i, wbm_err_i;
-
-  input  epb_clk;
-  input  epb_cs_n, epb_oe_n, epb_r_w_n;
-  input   [3:0] epb_be_n;
-  input  [5:29] epb_addr;
-  input  [0:31] epb_data_i;
-  output [0:31] epb_data_o;
-  output epb_data_oe_n;
-  output epb_rdy;
-  output epb_doen;
 
   /******* Common Signals *******/
 
@@ -56,7 +57,7 @@ module epb_wb_bridge(
   /* Command Generation */
   always @(posedge epb_clk) begin
     prev_cs_n <= epb_cs_n;
-    if (wbm_rst_i) begin
+    if (wb_rst_i) begin
       cmnd_got_reg <= 1'b0;
     end else begin
       if (epb_trans) begin
@@ -86,7 +87,7 @@ module epb_wb_bridge(
   always @(posedge epb_clk) begin
     //strobes 
     epb_rdy_int <= 1'b0; /* TODO: add tristate to this ? */
-    if (wbm_rst_i) begin
+    if (wb_rst_i) begin
       resp_ack_reg <= 1'b0;
       epb_data_oen_reg <= 1'b0;
     end else begin
@@ -109,17 +110,19 @@ module epb_wb_bridge(
   /**** WishBone Generation ****/
   reg [31:0] wbm_dat_i_reg;
   assign epb_data_o = wbm_dat_i_reg;
-  assign wbm_dat_o   = epb_data_i;
+  assign wbm_dat_o  = epb_data_i;
 
-  wire [24:0] epb_addr_fixed = epb_addr;
-  assign wbm_adr_o   = {epb_addr_fixed, 2'b0};
+  //wire [24:0] epb_addr_fixed = epb_addr;
+  //assign wbm_adr_o   = {epb_addr_fixed, 2'b0};
+  //assign wbm_adr_o   = epb_addr_fixed;
+  assign wbm_adr_o   = epb_addr;
   assign wbm_sel_o   = ~epb_be_n;
   assign wbm_we_o    = ~epb_r_w_n;
 
   /* Register Data */
   /*
-  always @(posedge wbm_clk_i) begin
-    if (wbm_rst_i) begin
+  always @(posedge wb_clk_i) begin
+    if (wb_rst_i) begin
       wbm_dat_i_reg <= 32'b0;
     end else begin
       if (wbm_ack_i || wbm_err_i) begin
@@ -137,10 +140,10 @@ module epb_wb_bridge(
   reg cmnd_ack_reg;
   assign cmnd_ack_unstable = cmnd_ack_reg | cmnd_got;
 
-  always @(posedge wbm_clk_i) begin
+  always @(posedge wb_clk_i) begin
     //strobes
     wbm_cyc_o <= 1'b0;
-    if (wbm_rst_i) begin
+    if (wb_rst_i) begin
       cmnd_ack_reg <= 1'b0;
     end else begin
       if (cmnd_got) begin
@@ -158,8 +161,8 @@ module epb_wb_bridge(
   reg resp_got_reg;
   assign resp_got_unstable = wbm_ack_i | resp_got_reg;
 
-  always @(posedge wbm_clk_i) begin
-    if (wbm_rst_i) begin
+  always @(posedge wb_clk_i) begin
+    if (wb_rst_i) begin
       resp_got_reg <= 1'b0;
       wbm_dat_i_reg <= 32'b0;
     end else begin
@@ -182,13 +185,13 @@ module epb_wb_bridge(
   end
 
   reg resp_ack_retimed;
-  always @(posedge wbm_clk_i) begin
+  always @(posedge wb_clk_i) begin
     resp_ack_retimed <= resp_ack_unstable;
     resp_ack         <= resp_ack_retimed;
   end
 
   reg cmnd_got_retimed;
-  always @(posedge wbm_clk_i) begin
+  always @(posedge wb_clk_i) begin
     cmnd_got_retimed <= cmnd_got_unstable;
     cmnd_got         <= cmnd_got_retimed;
   end

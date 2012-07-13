@@ -16,8 +16,8 @@ module bram_wb #(
       //=============
       // Parameters
       //=============
-      parameter BUS_BASE_ADDR  = 0,
-      parameter BUS_HIGH_ADDR  = 32,
+      parameter DEV_BASE_ADDR  = 0,
+      parameter DEV_HIGH_ADDR  = 32,
       parameter BUS_DATA_WIDTH = 32,
       parameter BUS_ADDR_WIDTH = 8,
       parameter BUS_BE_WIDTH   = 4,
@@ -87,6 +87,7 @@ module bram_wb #(
          .b_data_out (read_data)
    );
 
+   wire adr_match = wbs_adr_i >= DEV_BASE_ADDR && wbs_adr_i <= DEV_HIGH_ADDR;
    // TODO: make sure the logic below is working!!!!
    //=================
    // Wishbone Logic
@@ -106,7 +107,7 @@ module bram_wb #(
             en_ram <= 0;
          end
    
-         if (wbs_stb_i & wbs_cyc_i) begin
+         if (adr_match & wbs_stb_i & wbs_cyc_i) begin
             //master is requesting somethign
             en_ram <= 1;
             ram_adr <= wbs_adr_i[BUS_ADDR_WIDTH:0];
