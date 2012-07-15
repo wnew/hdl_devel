@@ -1,0 +1,2 @@
+This folder contains test benches that test a number of modules conntected together.
+Individual module test benches are contained in the specific modules library folder.

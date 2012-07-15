@@ -1,10 +1,11 @@
 //============================================================================//
 //                                                                            //
-//      Wishbone slave template test bench                                    //
+//      EPB WB Bridge test bench                                              //
 //                                                                            //
-//      Module name: bram_wb_tb                                               //
-//      Desc: runs and tests the wbs_template module,                         //
-//      Date: Jule 2012                                                       //
+//      Module name: epb_wb_tb                                                //
+//      Desc: tests the epb_wb_bridge and wbs_arbiter but connecting 3        //
+//            wishbone slaves and checking the full data path                 //
+//      Date: July 2012                                                       //
 //      Developer: Wesley New                                                 //
 //      Licence: GNU General Public License ver 3                             //
 //      Notes:                                                                //
@@ -13,8 +14,15 @@
 `timescale 1ns/1ns
 `include "include/build_parameters.v"
 `include "include/mem_layout.v"
+`include "../../controllers/bram_wb/bram_wb.v"
+`include "../../controllers/sw_reg/sw_reg_wr.v"
+`include "../../primitives/bram/bram_sync_dp.v"
+`include "../../../base_designs/roach2/wbs_arbiter/wbs_arbiter.v"
+`include "../../../base_designs/roach2/wbs_arbiter/timeout.v"
+`include "../../../base_designs/roach2/epb_wb_bridge/epb_wb_bridge.v"
+`include "../../../base_designs/roach2/sys_block/sys_block.v"
 
-module wb_test;
+module epb_wb_tb;
 
    localparam ARCHITECTURE   = "BEHAVIORAL";
    localparam BUS_DATA_WIDTH = 32;  // 8, 16, 32, 64

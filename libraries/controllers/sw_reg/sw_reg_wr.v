@@ -24,8 +24,8 @@ module sw_reg_wr #(
       //===============
       // fabric ports
       //===============
-      input         fabric_clk_i,
-      output [31:0] fabric_data_o,
+      input             fabric_clk_i,
+      output reg [31:0] fabric_data_o,
       
       //============
       // wb inputs
@@ -65,8 +65,6 @@ module sw_reg_wr #(
    //============
    // registers
    //============
-   reg [BUS_DATA_WIDTH-1:0] fabric_data_o_reg;
-   reg [BUS_DATA_WIDTH-1:0] wbs_dat_o_reg;
    reg [BUS_DATA_WIDTH-1:0] reg_buf = {BUS_DATA_WIDTH{1'b0}};
 
    // Handshake signal from WB to application indicating data is ready to be latched
@@ -77,8 +75,6 @@ module sw_reg_wr #(
    reg register_done;
    reg register_doneR;
    reg register_doneRR;
-
-   assign fabric_data_o = fabric_data_o_reg;
 
    //===============
    // fabric logic
@@ -97,7 +93,7 @@ module sw_reg_wr #(
       if (register_readyRR)
       begin
          register_done <= 1'b1;
-         fabric_data_o_reg <= reg_buf;
+         fabric_data_o <= reg_buf;
          //$display("fabric data read %h", fabric_data_o);
       end
    end
@@ -127,7 +123,6 @@ module sw_reg_wr #(
          end
          // master is requesting somethign
          if (adr_match & wbs_stb_i & wbs_cyc_i) begin
-            wbs_dat_o <= wbs_dat_o_reg;
             //================
             // write request
             //================
@@ -183,7 +178,7 @@ module sw_reg_wr #(
                   32'h0: begin
                      //reading something from address 0
                      //$display("user read %h", reg_buf);
-                     wbs_dat_o_reg <= reg_buf;
+                     wbs_dat_o <= reg_buf;
                   end
                   //add as many addresses as you need here
                   default: begin
@@ -193,9 +188,6 @@ module sw_reg_wr #(
             end
             wbs_ack_o <= 1;
          end
-         // if not (adr_match, wbs_cyc_i or wb_stb_i) release the Kraken!... I mean the data_o port
-         else
-            wbs_dat_o = 32'bz;
       end
    end
 endmodule

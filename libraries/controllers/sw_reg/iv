@@ -1,8 +1,6 @@
 clear
-iverilog sw_reg_wr.v sw_reg_wr_tb.v -o ./gen/sw_reg_wr.o
 iverilog sw_reg_r.v sw_reg_r_tb.v -o ./gen/sw_reg_r.o
 mkdir gen
 cd gen
-./sw_reg_wr.o
 ./sw_reg_r.o
 cd ..

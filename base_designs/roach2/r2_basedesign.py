@@ -87,15 +87,15 @@ def toplevel(
       block_name = "1", 
       wb_clk_i      = wbm_clk_i, 
       wb_rst_i      = wbm_rst_i, 
-      wb_cyc_o      = wbm_cyc_o, 
-      wb_stb_o      = wbm_stb_o, 
-      wb_we_o       = wbm_we_o, 
-      wb_sel_o      = wbm_sel_o, 
-      wb_adr_o      = wbm_adr_o, 
-      wb_dat_o      = wbm_dat_o, 
-      wb_dat_i      = wbm_dat_i, 
-      wb_ack_i      = wbm_ack_i, 
-      wb_err_i      = wbm_err_i, 
+      wbm_cyc_o      = wbm_cyc_o, 
+      wbm_stb_o      = wbm_stb_o, 
+      wbm_we_o       = wbm_we_o, 
+      wbm_sel_o      = wbm_sel_o, 
+      wbm_adr_o      = wbm_adr_o, 
+      wbm_dat_o      = wbm_dat_o, 
+      wbm_dat_i      = wbm_dat_i, 
+      wbm_ack_i      = wbm_ack_i, 
+      wbm_err_i      = wbm_err_i, 
       epb_clk       = epb_clk, 
       epb_cs_n      = ppc_pcsn, 
       epb_oe_n      = ppc_poen, 
@@ -115,8 +115,8 @@ def toplevel(
       block_name    = "1", 
       epb_data_buf  = ppc_pdata, 
       epb_data_oe_n = epb_data_oe_n, 
-      epb_data_i    = epb_data_i, 
-      epb_data_o    = epb_data_o
+      epb_data_i    = epb_data_o, 
+      epb_data_o    = epb_data_i
    )
 
    wbs_arb = wbs_arbiter.wbs_arbiter_wrapper(
@@ -144,17 +144,17 @@ def toplevel(
 
    sys_blk = sys_block.sys_block_wrapper(
       block_name = "1", 
-      wb_clk_i   = wbm_clk_i, 
-      wb_rst_i   = wbm_rst_i, 
-      wb_cyc_i   = wbs_cyc_o, 
-      wb_stb_i   = wbs_stb_o, 
-      wb_we_i    = wbs_we_o, 
-      wb_sel_i   = wbs_sel_o, 
-      wb_adr_i   = wbs_adr_o, 
-      wb_dat_i   = wbs_dat_o, 
-      wb_dat_o   = wbs_dat_i, 
-      wb_ack_o   = wbs_ack_i, 
-      wb_err_o   = wbs_err_i
+      wbs_clk_i   = wbm_clk_i, 
+      wbs_rst_i   = wbm_rst_i, 
+      wbs_cyc_i   = wbs_cyc_o, 
+      wbs_stb_i   = wbs_stb_o, 
+      wbs_we_i    = wbs_we_o, 
+      wbs_sel_i   = wbs_sel_o, 
+      wbs_adr_i   = wbs_adr_o, 
+      wbs_dat_i   = wbs_dat_o, 
+      wbs_dat_o   = wbs_dat_i, 
+      wbs_ack_o   = wbs_ack_i, 
+      wbs_err_o   = wbs_err_i
    )
 
 

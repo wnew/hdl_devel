@@ -1,0 +1,4 @@
+clear
+iverilog epb_wb_test.v ../../base_designs/roach2/*/*.v include/*.v ../*/*.v
+./a.out
+

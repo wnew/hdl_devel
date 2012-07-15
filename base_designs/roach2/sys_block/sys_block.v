@@ -16,15 +16,14 @@ module sys_block #(
       //=============
       // parameters
       //=============
-      parameter DEV_BASE_ADDR  = {BUS_ADDR_WIDTH{1'b0}}, // default 32'h0
-      parameter DEV_HIGH_ADDR  = {{(BUS_ADDR_WIDTH-4){1'b0}}, 4'hF}, // default 32'h000000EE
       parameter BUS_DATA_WIDTH = 32,  // default is 32. but can be 8, 16, 32, 64
       parameter BUS_ADDR_WIDTH = 8,   // default is 8.  but can be 4, 8, 16, 32
-      parameter BOARD_ID       = 32'h0,
-      parameter REV_MAJ        = 32'h0,
-      parameter REV_MIN        = 32'h0,
-      parameter REV_RCS        = 32'h0
-
+      parameter DEV_BASE_ADDR  = {BUS_ADDR_WIDTH{1'b0}}, // default 32'h0
+      parameter DEV_HIGH_ADDR  = {{(BUS_ADDR_WIDTH-4){1'b0}}, 4'h7}, // default 7
+      parameter BOARD_ID       = {BUS_ADDR_WIDTH{1'b0}},
+      parameter REV_MAJ        = {BUS_ADDR_WIDTH{1'b0}},
+      parameter REV_MIN        = {BUS_ADDR_WIDTH{1'b0}},
+      parameter REV_RCS        = {BUS_ADDR_WIDTH{1'b0}}
    ) (
       //============
       // wb inputs
@@ -65,6 +64,7 @@ module sys_block #(
    // registers
    //============
    reg [BUS_DATA_WIDTH-1:0] scratchpad [3:0];
+
    //blocks
    always @ (posedge wb_clk_i) begin
       // reset logic
@@ -81,7 +81,6 @@ module sys_block #(
          end
          // master is requesting somethign
          if (adr_match & wbs_stb_i & wbs_cyc_i) begin
-            wbs_dat_o <= wbs_dat_o_reg;
             //================
             // write request
             //================
@@ -209,27 +208,22 @@ module sys_block #(
             //===============
             else begin 
                case (wbs_adr_i - DEV_BASE_ADDR)
-                  32'h0:   wbs_dat_o_reg <= BOARD_ID;
-                  32'h1:   wbs_dat_o_reg <= REV_MAJ;
-                  32'h2:   wbs_dat_o_reg <= REV_MIN;
-                  32'h3:   wbs_dat_o_reg <= REV_RCS;
-                  32'h4:   wbs_dat_o_reg <= scratchpad[0];
-                  32'h5:   wbs_dat_o_reg <= scratchpad[1];
-                  32'h6:   wbs_dat_o_reg <= scratchpad[2];
-                  32'h7:   wbs_dat_o_reg <= scratchpad[3];
+                  32'h0:   wbs_dat_o <= BOARD_ID;
+                  32'h1:   wbs_dat_o <= REV_MAJ;
+                  32'h2:   wbs_dat_o <= REV_MIN;
+                  32'h3:   wbs_dat_o <= REV_RCS;
+                  32'h4:   wbs_dat_o <= scratchpad[0];
+                  32'h5:   wbs_dat_o <= scratchpad[1];
+                  32'h6:   wbs_dat_o <= scratchpad[2];
+                  32'h7:   wbs_dat_o <= scratchpad[3];
                   //add as many addresses as you need here
                   default: begin
-                     wbs_dat_o_reg <= 32'b0;
+                     wbs_dat_o <= 32'b0;
                   end
                endcase
             end
             wbs_ack_o <= 1;
          end
-         // if not (adr_match, wbs_cyc_i or wb_stb_i) release the Kraken!... I mean the data_o port
-         else
-            wbs_dat_o = 32'bz;
       end
    end
-   reg [BUS_DATA_WIDTH-1:0] wbs_dat_o_reg;
-   //assign wbs_dat_o = wbs_dat_o_reg;
 endmodule
