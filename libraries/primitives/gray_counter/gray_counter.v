@@ -41,8 +41,7 @@ module gray_counter #(
       end
       else if (en) begin
          binary_count <=  binary_count + 1;
-         count_out    <= {binary_count[DATA_WIDTH-1],
-                          binary_count[DATA_WIDTH-2:0] ^ binary_count[DATA_WIDTH-1:1]};
+         count_out    <= {binary_count[DATA_WIDTH-1], binary_count[DATA_WIDTH-2:0] ^ binary_count[DATA_WIDTH-1:1]};
       end
    end
 endmodule

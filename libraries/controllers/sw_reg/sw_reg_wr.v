@@ -44,8 +44,7 @@ module sw_reg_wr #(
       //=============
       output reg [BUS_DATA_WIDTH-1:0] wbs_dat_o,
       output reg                      wbs_ack_o,
-      output reg                      wbs_err_o,
-      output reg                      wbs_int_o
+      output reg                      wbs_err_o
    );
 
    integer i;
@@ -113,7 +112,6 @@ module sw_reg_wr #(
      if (wb_rst_i) begin
          wbs_ack_o <= 0;
          wbs_err_o <= 0;
-         wbs_int_o <= 0;
          register_ready <= 1'b0;
       end
       else begin

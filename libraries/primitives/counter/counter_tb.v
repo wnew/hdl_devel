@@ -69,6 +69,12 @@ module counter_tb;
       clk = 0;
       en  = 1;
       rst = 0;
+
+      #50
+      en = 0;
+      #10
+      en = 1;
+     
    end
 
    //====================

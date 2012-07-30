@@ -55,7 +55,6 @@ class bram_wb:
          wbs_adr_i,
          wbs_dat_i,
          wbs_dat_o,
-         wbs_int_o,
          wbs_ack_o,
 
          #=============
@@ -89,7 +88,6 @@ class bram_wb:
       # removes warning when converting to hdl
       fabric_data_out.driven = "wire"
       wbs_dat_o.driven       = "wire"
-      wbs_int_o.driven       = "wire"
       wbs_ack_o.driven       = "wire"
 
       print SLI
@@ -158,7 +156,7 @@ def convert():
    fabric_clk, fabric_rst, fabric_we = [Signal(bool(0))  for i in range(3)] 
    fabric_addr = Signal(intbv(0)[BUS_ADDR_WIDTH:]) 
    fabric_data_in, fabric_data_out                = [Signal(intbv(0)[BUS_DATA_WIDTH:]) for i in range(2)] 
-   wbs_clk_i, wbs_rst_i, wbs_we_i, wbs_int_o      = [Signal(bool(0))  for i in range(4)]
+   wbs_clk_i, wbs_rst_i, wbs_we_i      = [Signal(bool(0))  for i in range(3)]
    wbs_sel_i = Signal(intbv(0)[BUS_BE_WIDTH:])
    wbs_cyc_i = Signal(intbv(0)[SLI:])
    wbs_stb_i = Signal(intbv(0)[SLI:])
@@ -183,7 +181,6 @@ def convert():
              wbs_adr_i       = wbs_adr_i,
              wbs_dat_i       = wbs_dat_i,
              wbs_dat_o       = wbs_dat_o,
-             wbs_int_o       = wbs_int_o,
              wbs_ack_o       = wbs_ack_o,
              module_name     = module_name,
              SLI             = SLI,

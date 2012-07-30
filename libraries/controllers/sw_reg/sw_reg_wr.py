@@ -38,7 +38,6 @@ def sw_reg_wr_wrapper(block_name,
       wbs_dat_o,
       wbs_ack_o,
       wbs_err_o,
-      wbs_int_o,
 
       #=============
       # Parameters
@@ -65,7 +64,6 @@ def sw_reg_wr_wrapper(block_name,
    wbs_dat_o.driven     = "wire"
    wbs_ack_o.driven     = "wire"
    wbs_err_o.driven     = "wire"
-   wbs_int_o.driven     = "wire"
 
    return logic
 
@@ -109,7 +107,7 @@ def convert():
    wb_clk_i,  wb_rst_i,  wbs_cyc_i,
    wbs_stb_i, wbs_we_i,  wbs_sel_i,
    wbs_adr_i, wbs_dat_i, wbs_dat_o,
-   wbs_ack_o, wbs_err_o, wbs_int_o) = [Signal(bool(0)) for i in range(14)]
+   wbs_ack_o, wbs_err_o) = [Signal(bool(0)) for i in range(13)]
 
    toVerilog(sw_reg_wr_wrapper, block_name="inst", 
       fabric_clk_i = fabric_clk_i,
@@ -124,8 +122,7 @@ def convert():
       wbs_dat_i = wbs_dat_i,
       wbs_dat_o = wbs_dat_o,
       wbs_ack_o = wbs_ack_o,
-      wbs_err_o = wbs_err_o,
-      wbs_int_o = wbs_int_o)
+      wbs_err_o = wbs_err_o)
 
 if __name__ == "__main__":
    convert()

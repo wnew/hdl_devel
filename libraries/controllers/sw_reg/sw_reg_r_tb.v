@@ -37,7 +37,6 @@ module sw_reg_r_tb;
    reg  [BUS_DATA_WIDTH-1:0] wbs_dat_i;
    wire [BUS_DATA_WIDTH-1:0] wbs_dat_o;
    wire                      wbs_ack_o;
-   wire                      wbs_int_o;
 
    reg                       fabric_clk_i;
    reg  [BUS_DATA_WIDTH-1:0] fabric_data_i;
@@ -63,8 +62,7 @@ module sw_reg_r_tb;
       .wbs_adr_i (wbs_adr_i),
       .wbs_dat_i (wbs_dat_i),
       .wbs_dat_o (wbs_dat_o),
-      .wbs_ack_o (wbs_ack_o),
-      .wbs_int_o (wbs_int_o)
+      .wbs_ack_o (wbs_ack_o)
    );
 
 //==============

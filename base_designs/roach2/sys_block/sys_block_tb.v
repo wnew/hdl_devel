@@ -32,7 +32,6 @@ module sys_block_tb;
    reg  [BUS_DATA_WIDTH-1:0] wbs_dat_i;
    wire [BUS_DATA_WIDTH-1:0] wbs_dat_o;
    wire                      wbs_ack_o;
-   wire                      wbs_int_o;
 
    //=====================================
    // instance, "(d)esign (u)nder (t)est"
@@ -57,8 +56,7 @@ module sys_block_tb;
       .wbs_adr_i (wbs_adr_i),
       .wbs_dat_i (wbs_dat_i),
       .wbs_dat_o (wbs_dat_o),
-      .wbs_ack_o (wbs_ack_o),
-      .wbs_int_o (wbs_int_o)
+      .wbs_ack_o (wbs_ack_o)
    );
 
 //==============
