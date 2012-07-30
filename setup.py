@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name = 'casper',
+    name = 'casper-myhdl',
     version = '0.1',
     packages = find_packages(),
 
