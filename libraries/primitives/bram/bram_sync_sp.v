@@ -16,24 +16,24 @@ module bram_sync_sp #(
        // Parameters
        //=============
        parameter ARCHITECTURE = "BEHAVIORAL",
-       parameter DATA_WIDTH = 32,
-       parameter ADDR_WIDTH = 4
+       parameter RAM_DATA_WIDTH = 32,
+       parameter RAM_ADDR_WIDTH = 4
    ) (
        //========
        // Ports
        //========
-       input  wire                  clk,
-       input  wire                  rst,
-       input  wire                  wr,
-       input  wire [ADDR_WIDTH-1:0] addr,
-       input  wire [DATA_WIDTH-1:0] data_in,
-       output reg  [DATA_WIDTH-1:0] data_out
+       input  wire                      clk,
+       input  wire                      rst,
+       input  wire                      wr,
+       input  wire [RAM_ADDR_WIDTH-1:0] addr,
+       input  wire [RAM_DATA_WIDTH-1:0] data_in,
+       output reg  [RAM_DATA_WIDTH-1:0] data_out
    );
 
    //=========
    // Memory
    //=========
-   reg [DATA_WIDTH-1:0] mem [(2**ADDR_WIDTH)-1:0];
+   reg [RAM_DATA_WIDTH-1:0] mem [(2**RAM_ADDR_WIDTH)-1:0];
    
 
    //=======================================
@@ -50,7 +50,7 @@ module bram_sync_sp #(
             //===================
             always @(posedge clk) begin
                if (rst) begin
-                  data_out <= {DATA_WIDTH{1'b0}};
+                  data_out <= {RAM_DATA_WIDTH{1'b0}};
                end
                else begin
                   data_out <= mem[addr];

@@ -27,19 +27,29 @@ def bram_sync_sp_wrapper(block_name,
       #=============
       # Parameters
       #=============
-      ARCHITECTURE= "BEHAVIORAL",
-      DATA_WIDTH  = 32,
-      ADDR_WIDTH  = 4
+      ARCHITECTURE   = "BEHAVIORAL",
+      RAM_DATA_WIDTH = 32,
+      RAM_ADDR_WIDTH = 4
    ):
 
+   mem = [Signal(intbv(0)[RAM_DATA_WIDTH:]) for i in range(2**RAM_ADDR_WIDTH)]
+
    #===================
-   # TODO:Simulation Logic
+   # Simulation Logic
+   #===================
+   # a_clk logic
    #===================
    @always(clk.posedge)
    def logic():
-      pass
+      if rst:
+         data_out.next = 0
+      else:
+         data_out.next = mem[addr.val]
+         if wr:
+            mem[addr.val] = data_in.val
+   
+   
    # removes warning when converting to hdl
-   data_out.driven = "wire"
 
    return logic
 

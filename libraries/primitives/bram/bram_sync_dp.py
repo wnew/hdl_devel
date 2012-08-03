@@ -33,27 +33,42 @@ def bram_sync_dp_wrapper(block_name,
       # Parameters
       #=============
       ARCHITECTURE = "BEHAVIORAL",
-      DATA_WIDTH   = 32,
-      ADDR_WIDTH   = 4
+      RAM_DATA_WIDTH   = 32,
+      RAM_ADDR_WIDTH   = 4
    ):
+   
+   mem = [Signal(intbv(0)[RAM_DATA_WIDTH:]) for i in range(2**RAM_ADDR_WIDTH)]
 
-   #========================
-   # TODO:Simulation Logic
-   #========================
+   #===================
+   # Simulation Logic
+   #===================
+   # a_clk logic
+   #===================
    @always(a_clk.posedge)
-   def logic():
-      #if (rst == 0 and a_data_out < COUNT_TO):
-      #   if (en == 1):
-      #      data_out == data_out + STEP
-      #else:
-      a_data_out = 0
-
+   def a_logic():
+      if rst:
+         a_data_out.next = 0
+      else:
+         a_data_out.next = mem[a_addr.val]
+         if a_wr:
+            mem[a_addr.val] = a_data_in.val
+   
+   #==============
+   # b_clk logic
+   #==============
+   @always(b_clk.posedge)
+   def b_logic():
+      if rst:
+         b_data_out.next = 0
+      else:
+         b_data_out.next = mem[b_addr.val]
+         if b_wr:
+            mem[b_addr.val] = b_data_in.val
+   
 
    # removes warning when converting to hdl
-   a_data_out.driven = "wire"
-   b_data_out.driven = "wire"
 
-   return logic
+   return a_logic, b_logic
 
    
 #=============================
@@ -63,8 +78,8 @@ bram_sync_dp_wrapper.verilog_code = \
 """
 bram_sync_dp #(
    .ARCHITECTURE ("$ARCHITECTURE"),
-   .DATA_WIDTH   ($DATA_WIDTH),
-   .ADDR_WIDTH   ($ADDR_WIDTH)
+   .RAM_DATA_WIDTH   ($RAM_DATA_WIDTH),
+   .RAM_ADDR_WIDTH   ($RAM_ADDR_WIDTH)
 ) bram_sync_dp_$block_name (
    .rst        ($rst),
    .a_clk      ($a_clk),
