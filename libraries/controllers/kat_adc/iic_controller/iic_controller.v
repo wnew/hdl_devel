@@ -282,12 +282,12 @@ endgenerate
     .op_rd_data (op_rd_data),
     .op_ack     (op_ack),
     .op_err     (op_err),
-	 .sda_i      (sda_i),
-	 .sda_o      (sda_o),
-	 .sda_t      (sda_t),
-	 .scl_i      (scl_i),
-	 .scl_o      (scl_o),
-	 .scl_t      (scl_t)
+    .sda_i      (sda_i),
+    .sda_o      (sda_o),
+    .sda_t      (sda_t),
+    .scl_i      (scl_i),
+    .scl_o      (scl_o),
+    .scl_t      (scl_t)
   );
 
   assign fab_op_ack = op_ack && arb_select == ARB_FAB;

@@ -134,7 +134,6 @@ module epb_wb_bridge #(
 
   /* Command collection */
 
-  reg wbm_cyc_o;
   assign wbm_stb_o = wbm_cyc_o;
 
   reg cmnd_ack_reg;

@@ -1,14 +1,14 @@
 module spi_controller(
 
-    input         wbs_clk_i,
-    input         wbs_rst_i,
+    input         wb_clk_i,
+    input         wb_rst_i,
     input         wbs_we_i,
     input         wbs_cyc_i,
     input         wbs_stb_i,
     input  [0:3]  wbs_sel_i,
     input  [0:31] wbs_adr_i,
-    input  [0:31] wbs_data_i,
-    output [0:31] wbs_data_o,
+    input  [0:31] wbs_dat_i,
+    output [0:31] wbs_dat_o,
     output        wbs_ack_o,
 
     output        adc0_adc3wire_clk,
@@ -78,13 +78,13 @@ module spi_controller(
   reg adc0_mmcm_psincdec_reg;
   assign adc0_psen     = adc0_mmcm_psen_reg;
   assign adc0_psincdec = adc0_mmcm_psincdec_reg;
-  assign adc0_psclk    = wbs_clk_i;
+  assign adc0_psclk    = wb_clk_i;
 
   reg adc1_mmcm_psen_reg;
   reg adc1_mmcm_psincdec_reg;
   assign adc1_psen     = adc1_mmcm_psen_reg;
   assign adc1_psincdec = adc1_mmcm_psincdec_reg;
-  assign adc1_psclk    = wbs_clk_i;
+  assign adc1_psclk    = wb_clk_i;
 
   reg [15:0] adc0_config_data_reg;
   reg  [3:0] adc0_config_addr_reg;
@@ -101,7 +101,7 @@ module spi_controller(
   assign adc1_config_start = adc1_config_start_reg;
 
 
-  always @(posedge wbs_clk_i) begin
+  always @(posedge wb_clk_i) begin
     wbs_ack <= 1'b0;
     
     adc0_reset_reg <= 1'b0;
@@ -113,7 +113,7 @@ module spi_controller(
     adc0_config_start_reg <= 1'b0;
     adc1_config_start_reg <= 1'b0;
 
-    if (wbs_rst_i) begin
+    if (wb_rst_i) begin
     end else begin
       if (addr_match && !wbs_ack) begin
         wbs_ack <= 1'b1;
@@ -121,42 +121,42 @@ module spi_controller(
           case (wbs_addr[3:2])
             0:  begin
               if (wbs_sel_i[3]) begin
-                adc0_reset_reg <= wbs_data_i[31];
-                adc1_reset_reg <= wbs_data_i[30];
+                adc0_reset_reg <= wbs_dat_i[31];
+                adc1_reset_reg <= wbs_dat_i[30];
               end
               if (wbs_sel_i[1]) begin
-                adc0_mmcm_psen_reg <= wbs_data_i[15];
-                adc1_mmcm_psen_reg <= wbs_data_i[11];
-                adc0_mmcm_psincdec_reg <= wbs_data_i[14];
-                adc1_mmcm_psincdec_reg <= wbs_data_i[10];
+                adc0_mmcm_psen_reg <= wbs_dat_i[15];
+                adc1_mmcm_psen_reg <= wbs_dat_i[11];
+                adc0_mmcm_psincdec_reg <= wbs_dat_i[14];
+                adc1_mmcm_psincdec_reg <= wbs_dat_i[10];
               end
             end
             1:  begin
               if (wbs_sel_i[3]) begin
-                adc0_config_start_reg <= wbs_data_i[31];
+                adc0_config_start_reg <= wbs_dat_i[31];
               end
               if (wbs_sel_i[2]) begin
-                adc0_config_addr_reg <= wbs_data_i[20:23];
+                adc0_config_addr_reg <= wbs_dat_i[20:23];
               end
               if (wbs_sel_i[1]) begin
-                adc0_config_data_reg[7:0] <= wbs_data_i[8:15];
+                adc0_config_data_reg[7:0] <= wbs_dat_i[8:15];
               end
               if (wbs_sel_i[0]) begin
-                adc0_config_data_reg[15:8] <= wbs_data_i[0:7];
+                adc0_config_data_reg[15:8] <= wbs_dat_i[0:7];
               end
             end
             2:  begin
               if (wbs_sel_i[3]) begin
-                adc1_config_start_reg <= wbs_data_i[31];
+                adc1_config_start_reg <= wbs_dat_i[31];
               end
               if (wbs_sel_i[2]) begin
-                adc1_config_addr_reg <= wbs_data_i[20:23];
+                adc1_config_addr_reg <= wbs_dat_i[20:23];
               end
               if (wbs_sel_i[1]) begin
-                adc1_config_data_reg[7:0] <= wbs_data_i[8:15];
+                adc1_config_data_reg[7:0] <= wbs_dat_i[8:15];
               end
               if (wbs_sel_i[0]) begin
-                adc1_config_data_reg[15:8] <= wbs_data_i[0:7];
+                adc1_config_data_reg[15:8] <= wbs_dat_i[0:7];
               end
             end
             3:  begin
@@ -167,18 +167,18 @@ module spi_controller(
     end
   end
 
-  reg [31:0] wbs_data_out;
+  reg [31:0] wbs_dat_out;
 
   always @(*) begin
     case (wbs_addr[3:2])
-      0: wbs_data_out <= {2'b0, adc1_psdone, adc0_psdone, 4'b0, 2'b0, adc1_mmcm_psincdec_reg, adc1_mmcm_psen_reg, 2'b0, adc0_mmcm_psincdec_reg, adc0_mmcm_psen_reg, 16'b0};
-      1: wbs_data_out <= {adc0_config_data_reg[15:8], adc0_config_data_reg[7:0], 4'b0, adc0_config_addr_reg, 7'b0, adc0_config_done};
-      2: wbs_data_out <= {adc1_config_data_reg[15:8], adc1_config_data_reg[7:0], 4'b0, adc1_config_addr_reg, 7'b0, adc1_config_done};
-      3: wbs_data_out <= {32'b0};
+      0: wbs_dat_out <= {2'b0, adc1_psdone, adc0_psdone, 4'b0, 2'b0, adc1_mmcm_psincdec_reg, adc1_mmcm_psen_reg, 2'b0, adc0_mmcm_psincdec_reg, adc0_mmcm_psen_reg, 16'b0};
+      1: wbs_dat_out <= {adc0_config_data_reg[15:8], adc0_config_data_reg[7:0], 4'b0, adc0_config_addr_reg, 7'b0, adc0_config_done};
+      2: wbs_dat_out <= {adc1_config_data_reg[15:8], adc1_config_data_reg[7:0], 4'b0, adc1_config_addr_reg, 7'b0, adc1_config_done};
+      3: wbs_dat_out <= {32'b0};
     endcase
   end
 
-  assign wbs_data_o = wbs_ack_o ? wbs_data_out : 32'b0;
+  assign wbs_dat_o = wbs_ack_o ? wbs_dat_out : 32'b0;
   assign wbs_ack_o  = wbs_ack;
 
   /********* DCM Reset Gen *********/
@@ -192,9 +192,9 @@ module spi_controller(
   // synthesis attribute IOB of adc0_reset_iob is TRUE
   // synthesis attribute IOB of adc1_reset_iob is TRUE
 
-  always @(posedge wbs_clk_i) begin
+  always @(posedge wb_clk_i) begin
 
-    if (wbs_rst_i) begin
+    if (wb_rst_i) begin
       adc0_reset_counter <= {8{1'b1}};
       adc1_reset_counter <= {8{1'b1}};
       adc0_reset_iob <= 1'b1;
@@ -238,8 +238,8 @@ module spi_controller(
 
   reg [4:0] adc0_config_progress;
 
-  always @(posedge wbs_clk_i) begin
-    if (wbs_rst_i) begin
+  always @(posedge wb_clk_i) begin
+    if (wb_rst_i) begin
       adc0_state <= CONFIG_IDLE;
     end else begin
       case (adc0_state)
@@ -281,7 +281,7 @@ module spi_controller(
   /* Clock Control */
 
   reg [3:0] clk0_counter;
-  always @(posedge wbs_clk_i) begin
+  always @(posedge wb_clk_i) begin
     if (clk0_en) begin
       clk0_counter <= clk0_counter + 1;
     end else begin
@@ -306,8 +306,8 @@ module spi_controller(
 
   reg [4:0] adc1_config_progress;
 
-  always @(posedge wbs_clk_i) begin
-    if (wbs_rst_i) begin
+  always @(posedge wb_clk_i) begin
+    if (wb_rst_i) begin
       adc1_state <= CONFIG_IDLE;
     end else begin
       case (adc1_state)
@@ -349,7 +349,7 @@ module spi_controller(
   /* Clock Control */
 
   reg [3:0] clk1_counter;
-  always @(posedge wbs_clk_i) begin
+  always @(posedge wb_clk_i) begin
     if (clk1_en) begin
       clk1_counter <= clk1_counter + 1;
     end else begin

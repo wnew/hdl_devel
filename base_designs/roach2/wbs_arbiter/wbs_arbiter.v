@@ -112,8 +112,6 @@ module wbs_arbiter #(
   assign wbs_we_o  = wbm_we_i;
   assign wbs_dat_o = wbm_dat_i;
 
-  reg wbm_err_o;
-
   //reg [NUM_SLAVES - 1:0] wbs_cyc_o;
   assign wbs_cyc_o = wbm_cyc_i;
   assign wbs_stb_o = wbs_cyc_o;

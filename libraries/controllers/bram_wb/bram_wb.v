@@ -21,6 +21,7 @@ module bram_wb #(
       parameter BUS_DATA_WIDTH = 32,
       parameter BUS_ADDR_WIDTH = 8,
       parameter BUS_BE_WIDTH   = 4,
+      parameter RAM_ADDR_WIDTH = 8,
       parameter SLEEP_COUNT    = 4
    ) (
       //===============
@@ -51,8 +52,7 @@ module bram_wb #(
    //===================
    // Local Parameters
    //===================
-   localparam RAM_DATA_WIDTH = 32;
-   localparam RAM_ADDR_WIDTH = 8;
+   localparam RAM_DATA_WIDTH = BUS_ADDR_WIDTH;
    localparam DATA_DEPTH = 2 ** RAM_ADDR_WIDTH;
 
    //======================
@@ -110,7 +110,7 @@ module bram_wb #(
          if (adr_match & wbs_stb_i & wbs_cyc_i) begin
             //master is requesting somethign
             en_ram <= 1;
-            ram_adr <= wbs_adr_i[BUS_ADDR_WIDTH:0];
+            ram_adr <= wbs_adr_i[BUS_ADDR_WIDTH-1:0];
             if (wbs_we_i) begin
                //write request
                //the bram module will handle all the writes
