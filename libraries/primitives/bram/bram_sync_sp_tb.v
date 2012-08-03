@@ -27,7 +27,6 @@ module bram_sync_sp_tb;
    //=============
    reg                        clk;
    reg                        rst;
-   reg                        en;
    reg                        wr;
    reg [LOCAL_ADDR_WIDTH-1:0] addr;
    reg [LOCAL_DATA_WIDTH-1:0] data_in;
@@ -47,7 +46,6 @@ module bram_sync_sp_tb;
 
       .clk      (clk),
       .rst      (rst),
-      .en       (en),
       .wr       (wr),
       .addr     (addr),
       .data_in  (data_in),
@@ -62,7 +60,6 @@ module bram_sync_sp_tb;
          $dumpvars;
          clk  = 0;
          rst  = 0;
-         en   = 1;
          addr = 4'b0110; 
          data_in = 32'b1010101010101;
          wr = 1;

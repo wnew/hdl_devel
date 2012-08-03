@@ -9,6 +9,7 @@
 //      Developer: Wesley New                                                 //
 //      Licence: GNU General Public License ver 3                             //
 //      Notes: Developed from a combiniation of bram implmentations           //
+//             This is a read-before-write implementation of a BRAM           //
 //                                                                            //
 //============================================================================//
 
@@ -23,7 +24,6 @@ module bram_sync_dp #(
       // General Ports
       //================
       input wire                   rst, 
-      input wire                   en, 
 
       //=========
       // Port A
@@ -61,11 +61,9 @@ module bram_sync_dp #(
       if (rst)
          a_data_out <= {DATA_WIDTH{1'b0}};
       else begin 
-         if (en) begin
-            a_data_out  <= mem[a_addr];
-            if (a_wr) begin
-               mem[a_addr] <= a_data_in;
-            end
+         a_data_out  <= mem[a_addr];
+         if (a_wr) begin
+            mem[a_addr] <= a_data_in;
          end
       end
    end
@@ -77,11 +75,9 @@ module bram_sync_dp #(
       if (rst)
          b_data_out <= {DATA_WIDTH{1'b0}};
       else begin
-         if (en) begin
-            b_data_out <= mem[b_addr];
-            if (b_wr) begin
-               mem[b_addr] <= b_data_in;
-            end
+         b_data_out <= mem[b_addr];
+         if (b_wr) begin
+            mem[b_addr] <= b_data_in;
          end
       end
    end

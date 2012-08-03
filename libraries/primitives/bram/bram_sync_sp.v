@@ -24,7 +24,6 @@ module bram_sync_sp #(
        //========
        input  wire                  clk,
        input  wire                  rst,
-       input  wire                  en,
        input  wire                  wr,
        input  wire [ADDR_WIDTH-1:0] addr,
        input  wire [DATA_WIDTH-1:0] data_in,
@@ -54,11 +53,9 @@ module bram_sync_sp #(
                   data_out <= {DATA_WIDTH{1'b0}};
                end
                else begin
-                  if (en) begin
-                     data_out <= mem[addr];
-                     if (wr) begin
-                        mem[addr] <= data_in;
-                     end
+                  data_out <= mem[addr];
+                  if (wr) begin
+                     mem[addr] <= data_in;
                   end
                end
             end

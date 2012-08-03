@@ -18,7 +18,6 @@ def bram_sync_dp_wrapper(block_name,
       # Ports
       #========
       rst,
-      en,
       a_clk,
       a_wr,
       a_addr,
@@ -33,9 +32,9 @@ def bram_sync_dp_wrapper(block_name,
       #=============
       # Parameters
       #=============
-      ARCHITECTURE="BEHAVIORAL",
-      DATA_WIDTH=32,
-      ADDR_WIDTH=4
+      ARCHITECTURE = "BEHAVIORAL",
+      DATA_WIDTH   = 32,
+      ADDR_WIDTH   = 4
    ):
 
    #========================
@@ -62,14 +61,12 @@ def bram_sync_dp_wrapper(block_name,
 #=============================
 bram_sync_dp_wrapper.verilog_code = \
 """
-bram_sync_dp
-#(
+bram_sync_dp #(
    .ARCHITECTURE ("$ARCHITECTURE"),
    .DATA_WIDTH   ($DATA_WIDTH),
    .ADDR_WIDTH   ($ADDR_WIDTH)
 ) bram_sync_dp_$block_name (
    .rst        ($rst),
-   .en         ($en),
    .a_clk      ($a_clk),
    .a_wr       ($a_wr),
    .a_addr     ($a_addr),
@@ -89,9 +86,9 @@ bram_sync_dp
 #=======================================
 def convert():
 
-   en, rst, a_clk, a_wr, a_addr, a_data_in, a_data_out, b_clk, b_wr, b_addr, b_data_in, b_data_out = [Signal(bool(0)) for i in range(12)]
+   rst, a_clk, a_wr, a_addr, a_data_in, a_data_out, b_clk, b_wr, b_addr, b_data_in, b_data_out = [Signal(bool(0)) for i in range(11)]
 
-   toVerilog(bram_sync_dp_wrapper, block_name="inst", en=en, rst=rst, a_clk=a_clk, a_wr=a_wr, a_addr=a_addr, a_data_in=a_data_in, a_data_out=a_data_out, b_clk=b_clk, b_wr=b_wr, b_addr=b_addr, b_data_in=b_data_in, b_data_out=b_data_out)
+   toVerilog(bram_sync_dp_wrapper, block_name="inst", rst=rst, a_clk=a_clk, a_wr=a_wr, a_addr=a_addr, a_data_in=a_data_in, a_data_out=a_data_out, b_clk=b_clk, b_wr=b_wr, b_addr=b_addr, b_data_in=b_data_in, b_data_out=b_data_out)
 
 
 if __name__ == "__main__":

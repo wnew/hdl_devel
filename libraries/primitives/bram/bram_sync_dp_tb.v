@@ -26,7 +26,6 @@ module bram_sync_dp_tb;
    //=============
    reg                        clk;
    reg                        rst;
-   reg                        en;
    reg                        a_wr;
    reg [LOCAL_ADDR_WIDTH-1:0] a_addr;
    reg [LOCAL_DATA_WIDTH-1:0] a_data_in;
@@ -50,7 +49,6 @@ module bram_sync_dp_tb;
    ) dut (
 
       .rst        (rst),
-      .en         (en),
 
       .a_clk      (clk),
       .a_wr       (a_wr),
@@ -72,7 +70,7 @@ module bram_sync_dp_tb;
    // define what myhdl takes over
    // only if we're running myhdl   
    initial begin
-      $from_myhdl(clk, en, rst);
+      $from_myhdl(clk, rst);
       $to_myhdl(out);
    end
 `else
@@ -85,7 +83,6 @@ module bram_sync_dp_tb;
          $dumpvars;
          clk    = 0;
          rst    = 0;
-         en     = 1;
          a_addr = 4'b0010; 
          a_data_in = 32'b1010101010101;
          a_wr = 1;
