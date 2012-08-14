@@ -13,14 +13,16 @@
 //                                                                            //
 //============================================================================//
 
+`include "bram_sync_sp.v"
+
 module bram_sync_sp_tb;
 
    //===================
    // local parameters
    //===================
-   localparam LOCAL_DATA_WIDTH = 8;
-   localparam LOCAL_ADDR_WIDTH = 4;
-   localparam LOCAL_DATA_DEPTH = 2**LOCAL_ADDR_WIDTH;
+   localparam LOCAL_RAM_DATA_WIDTH = 8;
+   localparam LOCAL_RAM_ADDR_WIDTH = 4;
+   localparam LOCAL_RAM_DATA_DEPTH = 2**LOCAL_RAM_ADDR_WIDTH;
 
    //=============
    // local regs
@@ -28,20 +30,20 @@ module bram_sync_sp_tb;
    reg                        clk;
    reg                        rst;
    reg                        wr;
-   reg [LOCAL_ADDR_WIDTH-1:0] addr;
-   reg [LOCAL_DATA_WIDTH-1:0] data_in;
+   reg [LOCAL_RAM_ADDR_WIDTH-1:0] addr;
+   reg [LOCAL_RAM_DATA_WIDTH-1:0] data_in;
 
    //==============
    // local wires 
    //==============
-   wire [LOCAL_DATA_WIDTH-1:0] data_out;
+   wire [LOCAL_RAM_DATA_WIDTH-1:0] data_out;
 
    //=====================================
    // instance, "(d)esign (u)nder (t)est"
    //=====================================
    bram_sync_sp #(
-      .DATA_WIDTH (`ifdef DATA_WIDTH `DATA_WIDTH `else LOCAL_DATA_WIDTH `endif),
-      .ADDR_WIDTH (`ifdef ADDR_WIDTH `ADDR_WIDTH `else LOCAL_ADDR_WIDTH `endif)
+      .RAM_DATA_WIDTH (`ifdef RAM_DATA_WIDTH `RAM_DATA_WIDTH `else LOCAL_RAM_DATA_WIDTH `endif),
+      .RAM_ADDR_WIDTH (`ifdef RAM_ADDR_WIDTH `RAM_ADDR_WIDTH `else LOCAL_RAM_ADDR_WIDTH `endif)
    ) dut (
 
       .clk      (clk),

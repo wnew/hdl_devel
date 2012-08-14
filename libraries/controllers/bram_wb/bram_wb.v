@@ -68,8 +68,8 @@ module bram_wb #(
    // BRAM instance
    //================   
    bram_sync_dp #(
-         .DATA_WIDTH (RAM_DATA_WIDTH),
-         .ADDR_WIDTH (RAM_ADDR_WIDTH)
+         .RAM_DATA_WIDTH (RAM_DATA_WIDTH),
+         .RAM_ADDR_WIDTH (RAM_ADDR_WIDTH)
       ) bram_inst (
          .rst        (wbs_rst_i || fabric_rst),
          .en         (en_ram),

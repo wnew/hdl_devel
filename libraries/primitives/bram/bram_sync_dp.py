@@ -32,9 +32,8 @@ def bram_sync_dp_wrapper(block_name,
       #=============
       # Parameters
       #=============
-      ARCHITECTURE = "BEHAVIORAL",
-      RAM_DATA_WIDTH   = 32,
-      RAM_ADDR_WIDTH   = 4
+      RAM_DATA_WIDTH = 32,
+      RAM_ADDR_WIDTH = 4
    ):
    
    mem = [Signal(intbv(0)[RAM_DATA_WIDTH:]) for i in range(2**RAM_ADDR_WIDTH)]
@@ -77,9 +76,8 @@ def bram_sync_dp_wrapper(block_name,
 bram_sync_dp_wrapper.verilog_code = \
 """
 bram_sync_dp #(
-   .ARCHITECTURE ("$ARCHITECTURE"),
-   .RAM_DATA_WIDTH   ($RAM_DATA_WIDTH),
-   .RAM_ADDR_WIDTH   ($RAM_ADDR_WIDTH)
+   .RAM_DATA_WIDTH ($RAM_DATA_WIDTH),
+   .RAM_ADDR_WIDTH ($RAM_ADDR_WIDTH)
 ) bram_sync_dp_$block_name (
    .rst        ($rst),
    .a_clk      ($a_clk),

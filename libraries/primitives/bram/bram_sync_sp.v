@@ -49,7 +49,7 @@ module bram_sync_sp #(
             // Read/Write Logic
             //===================
             always @(posedge clk) begin
-               if (rst) begin
+               if (`ifdef ACTIVE_LOW_RST !rst `else rst `endif) begin
                   data_out <= {RAM_DATA_WIDTH{1'b0}};
                end
                else begin

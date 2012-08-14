@@ -23,25 +23,25 @@ module bram_sync_dp #(
       //================
       // General Ports
       //================
-      input wire                   rst, 
+      input wire                       rst, 
 
       //=========
       // Port A
       //=========
-      input  wire                  a_clk,
-      input  wire                  a_wr,       // pulse a 1 to write and 0 reads
-      input  wire [ADDR_WIDTH-1:0] a_addr, 
-      input  wire [DATA_WIDTH-1:0] a_data_in,
-      output reg  [DATA_WIDTH-1:0] a_data_out,
+      input  wire                      a_clk,
+      input  wire                      a_wr,       // pulse a 1 to write and 0 reads
+      input  wire [RAM_ADDR_WIDTH-1:0] a_addr, 
+      input  wire [RAM_DATA_WIDTH-1:0] a_data_in,
+      output reg  [RAM_DATA_WIDTH-1:0] a_data_out,
       
       //=========
       // Port B
       //=========
-      input  wire                  b_clk,
-      input  wire                  b_wr,       // pulse a 1 to write and 0 reads
-      input  wire [ADDR_WIDTH-1:0] b_addr,
-      input  wire [DATA_WIDTH-1:0] b_data_in,
-      output reg  [DATA_WIDTH-1:0] b_data_out
+      input  wire                      b_clk,
+      input  wire                      b_wr,       // pulse a 1 to write and 0 reads
+      input  wire [RAM_ADDR_WIDTH-1:0] b_addr,
+      input  wire [RAM_DATA_WIDTH-1:0] b_data_in,
+      output reg  [RAM_DATA_WIDTH-1:0] b_data_out
    );
    
    //===============
@@ -58,7 +58,7 @@ module bram_sync_dp #(
    // Port A
    //=========
    always @(posedge a_clk) begin
-      if (rst)
+      if (`ifdef ACTIVE_LOW_RST !rst `else rst `endif)
          a_data_out <= {RAM_DATA_WIDTH{1'b0}};
       else begin 
          a_data_out  <= mem[a_addr];
@@ -72,7 +72,7 @@ module bram_sync_dp #(
    // Port B
    //=========
    always @(posedge b_clk) begin
-      if (rst)
+      if (`ifdef ACTIVE_LOW_RST !rst `else rst `endif)
          b_data_out <= {RAM_DATA_WIDTH{1'b0}};
       else begin
          b_data_out <= mem[b_addr];

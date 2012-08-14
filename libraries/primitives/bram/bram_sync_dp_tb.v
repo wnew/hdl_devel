@@ -13,39 +13,41 @@
 //                                                                            //
 //============================================================================//
 
+`include "bram_sync_dp.v"
+
 module bram_sync_dp_tb;
 
    //===================
    // local parameters
    //===================
-   localparam LOCAL_DATA_WIDTH = 8;
-   localparam LOCAL_ADDR_WIDTH = 4;
+   localparam LOCAL_RAM_DATA_WIDTH = 8;
+   localparam LOCAL_RAM_ADDR_WIDTH = 4;
 
    //=============
    // local regs
    //=============
-   reg                        clk;
-   reg                        rst;
-   reg                        a_wr;
-   reg [LOCAL_ADDR_WIDTH-1:0] a_addr;
-   reg [LOCAL_DATA_WIDTH-1:0] a_data_in;
-   reg                        b_wr;
-   reg [LOCAL_ADDR_WIDTH-1:0] b_addr;
-   reg [LOCAL_DATA_WIDTH-1:0] b_data_in;
+   reg                           clk;
+   reg                           rst;
+   reg                           a_wr;
+   reg [LOCAL_RAM_ADDR_WIDTH-1:0] a_addr;
+   reg [LOCAL_RAM_DATA_WIDTH-1:0] a_data_in;
+   reg                            b_wr;
+   reg [LOCAL_RAM_ADDR_WIDTH-1:0] b_addr;
+   reg [LOCAL_RAM_DATA_WIDTH-1:0] b_data_in;
 
    //==============
    // local wires 
    //==============
-   wire [LOCAL_DATA_WIDTH-1:0] a_data_out;
-   wire [LOCAL_DATA_WIDTH-1:0] b_data_out;
+   wire [LOCAL_RAM_DATA_WIDTH-1:0] a_data_out;
+   wire [LOCAL_RAM_DATA_WIDTH-1:0] b_data_out;
 
    
    //======================================
    // instance, "(d)esign (u)nder (t)est"
    //======================================
    bram_sync_dp #(
-      .DATA_WIDTH (`ifdef DATA_WIDTH `DATA_WIDTH `else LOCAL_DATA_WIDTH `endif),
-      .ADDR_WIDTH (`ifdef ADDR_WIDTH `ADDR_WIDTH `else LOCAL_ADDR_WIDTH `endif)
+      .RAM_DATA_WIDTH (`ifdef RAM_DATA_WIDTH `RAM_DATA_WIDTH `else LOCAL_RAM_DATA_WIDTH `endif),
+      .RAM_ADDR_WIDTH (`ifdef RAM_ADDR_WIDTH `RAM_ADDR_WIDTH `else LOCAL_RAM_ADDR_WIDTH `endif)
    ) dut (
 
       .rst        (rst),
@@ -74,6 +76,7 @@ module bram_sync_dp_tb;
       $to_myhdl(out);
    end
 `else
+
 
    //=============
    // initialize

@@ -27,7 +27,6 @@ def bram_sync_sp_wrapper(block_name,
       #=============
       # Parameters
       #=============
-      ARCHITECTURE   = "BEHAVIORAL",
       RAM_DATA_WIDTH = 32,
       RAM_ADDR_WIDTH = 4
    ):
@@ -61,9 +60,8 @@ bram_sync_sp_wrapper.verilog_code = \
 """
 bram_sync_sp
 #(
-   .ARCHITECTURE ("$ARCHITECTURE"),
-   .DATA_WIDTH   ($DATA_WIDTH),
-   .ADDR_WIDTH   ($ADDR_WIDTH)
+   .RAM_DATA_WIDTH ($RAM_DATA_WIDTH),
+   .RAM_ADDR_WIDTH ($RAM_ADDR_WIDTH)
 ) bram_sync_sp_$block_name (
    .clk      ($clk),
    .rst      ($rst),

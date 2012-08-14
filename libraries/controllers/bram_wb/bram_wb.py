@@ -62,11 +62,12 @@ class bram_wb:
          #=============
          module_name    = 1,
          SLI            = 0, # slave id, must be unique to each instantiation
-         BUS_BASE_ADDR  = 0,
-         BUS_HIGH_ADDR  = 32,
+         DEV_BASE_ADDR  = 0,
+         DEV_HIGH_ADDR  = 32,
          BUS_DATA_WIDTH = 32,
          BUS_ADDR_WIDTH = 8,
-         BUS_BE_WIDTH   = 4
+         BUS_BE_WIDTH   = 4,
+         RAM_ADDR_WIDTH = 8
       ):
       
       # the conversion of user defined code does not currently support self.
@@ -104,10 +105,12 @@ class bram_wb:
    """
    bram_wb
    #(
-      .BUS_BASE_ADDR  ($BUS_BASE_ADDR), 
-      .BUS_HIGH_ADDR  ($BUS_HIGH_ADDR), 
-      .BUS_DATA_WIDTH ($BUS_DATA_WIDTH), 
-      .BUS_ADDR_WIDTH ($BUS_ADDR_WIDTH) 
+      .DEV_BASE_ADDR  ($DEV_BASE_ADDR),
+      .DEV_HIGH_ADDR  ($DEV_HIGH_ADDR),
+      .BUS_DATA_WIDTH ($BUS_DATA_WIDTH),
+      .BUS_ADDR_WIDTH ($BUS_ADDR_WIDTH),
+      .BUS_BE_WIDTH   ($BUS_BE_WIDTH), 
+      .RAM_ADDR_WIDTH ($RAM_ADDR_WIDTH)
    ) bram_wb_$module_name (
      
       .fabric_clk      ($fabric_clk),
@@ -138,8 +141,8 @@ def convert():
    
    module_name     = 1
    SLI             = 1 # slave id, must be unique to each instantiation
-   BUS_BASE_ADDR   = 0
-   BUS_HIGH_ADDR   = 32
+   DEV_BASE_ADDR   = 0
+   DEV_HIGH_ADDR   = 32
    BUS_DATA_WIDTH  = 32
    BUS_ADDR_WIDTH  = 8 
    BUS_BE_WIDTH    = 4
@@ -184,8 +187,8 @@ def convert():
              wbs_ack_o       = wbs_ack_o,
              module_name     = module_name,
              SLI             = SLI,
-             BUS_BASE_ADDR   = BUS_BASE_ADDR,
-             BUS_HIGH_ADDR   = BUS_HIGH_ADDR,
+             DEV_BASE_ADDR   = DEV_BASE_ADDR,
+             DEV_HIGH_ADDR   = DEV_HIGH_ADDR,
              BUS_DATA_WIDTH  = BUS_DATA_WIDTH,
              BUS_ADDR_WIDTH  = BUS_ADDR_WIDTH,
              BUS_BE_WIDTH    = BUS_BE_WIDTH
