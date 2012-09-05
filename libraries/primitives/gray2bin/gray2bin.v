@@ -1,11 +1,26 @@
-/*Logic to convert binary numbers into Gray coded binary numbers is implemented in the following Verilog Code.
-*/
-
-
+//============================================================================//
+//                                                                            //
+//      Gray code to Binary converter                                         //
+//                                                                            //
+//      Module name: gray2bin                                                 //
+//      Desc: parameterised module to convert gray coded numbers to binary    //
+//            numbers                                                         //
+//      Date: Aug 2012                                                        //
+//      Developer: Wesley New                                                 //
+//      Licence: GNU General Public License ver 3                             //
+//      Notes:                                                                //
+//                                                                            //
+//============================================================================//
 
 module gray2bin #(
+      //=============
+      // Parameters
+      //=============
       parameter DATA_WIDTH = 32
    ) (
+      //============
+      // I/O Ports
+      //============
       input  [DATA_WIDTH-1:0] gray_in,
       output [DATA_WIDTH-1:0] binary_out
    );
@@ -13,7 +28,9 @@ module gray2bin #(
    // gen vars
    genvar i;
 
-   // Generate according to implementation
+   //=====================
+   // Generate: gray2bin
+   //=====================
    generate 
       for (i=0; i<DATA_WIDTH; i=i+1)
       begin
