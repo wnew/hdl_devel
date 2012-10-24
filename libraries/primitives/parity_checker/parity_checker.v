@@ -1,11 +1,11 @@
 //============================================================================//
 //                                                                            //
-//      Parameterize Decimator                                                //
+//      Parameterize Parity Checker                                           //
 //                                                                            //
-//      Module name: decimator                                                //
-//      Desc: parameterized decimator, current implementation decimates only  //
-//            whole factors                                                   //
-//      Date: June 2012                                                       //
+//      Module name: parity_checker                                           //
+//      Desc: parity checker, checks a single bit parity for a specified      //
+//            input data width                                                //
+//      Date: Oct 2012                                                        //
 //      Developer: Wesley New                                                 //
 //      Licence: GNU General Public License ver 3                             //
 //      Notes:                                                                //

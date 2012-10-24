@@ -1,15 +1,14 @@
 //============================================================================//
 //                                                                            //
-//      Decimator test bench                                                  //
+//      Parity Generator test bench                                           //
 //                                                                            //
-//      Module name: decimator_tb                                             //
-//      Desc: runs and tests the decimator module, and provides and interface //
-//            to test the module from Python (MyHDL)                          //
-//      Date: June 2012                                                       //
+//      Module name: parity_generator_tb                                      //
+//      Desc: runs and tests the parity generator module, and provides and    //
+//            interface to test the module from Python (MyHDL)                //
+//      Date: Oct 2012                                                        //
 //      Developer: Wesley New                                                 //
 //      Licence: GNU General Public License ver 3                             //
-//      Notes: This only tests the basic functionality of the module, more    //
-//             comprehensive testing is done in the python test file          //
+//      Notes:                                                                //
 //                                                                            //
 //============================================================================//
 
