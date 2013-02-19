@@ -35,7 +35,7 @@ def adder_wrapper(block_name,
    
    @always_comb
    def logic():
-      data_o = data1_i + data2_i
+      data_o.next = data1_i + data2_i
 
    # removes warning when converting to hdl
    data_o.driven = "wire"
