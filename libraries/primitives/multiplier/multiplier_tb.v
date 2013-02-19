@@ -67,14 +67,14 @@ module multiplier_tb;
       clk = 0;
       data1_i = 8'h3;
       data2_i = 8'h2;
-      #2
+      #4
       data2_i = 8'h9;
-      #6
+      #4
       data1_i = 8'h9;
-      #8
+      #4
       data1_i = 8'hFF;
+      #4
       data2_i = 8'hFF;
-
    end
 
    //====================
