@@ -38,7 +38,8 @@ module fifo_delay #(
    always @ (posedge clk)
    begin
       delay[DATA_WIDTH-1:0]                       <= din  [DATA_WIDTH-1:0];
-      delay[DATA_WIDTH*DELAY_CYCLES-1:DATA_WIDTH] <= delay[DATA_WIDTH*(DELAY_CYCLES-1):0];
+      if (DELAY_CYCLES > 1)
+         delay[DATA_WIDTH*DELAY_CYCLES-1:DATA_WIDTH] <= delay[DATA_WIDTH*(DELAY_CYCLES-1):0];
    end
    
    // Assign last slice of register to the data out

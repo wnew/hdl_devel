@@ -39,7 +39,7 @@ def delay_wrapper(block_name,
 
    @always(clk.posedge)
    def logic():
-      pass
+      dout.next = dout.val
 
    dout.driven       = "wire"
    data_valid.driven = "wire"
@@ -55,11 +55,11 @@ delay
    .DELAY_TYPE   ("$DELAY_TYPE"),
    .DATA_WIDTH   ($DATA_WIDTH),
    .DELAY_CYCLES ($DELAY_CYCLES)
-) counter_$block_name (
+) delay_$block_name (
    .clk        ($clk),
    .en         ($en),
    .rst        ($rst),
-   .din        ($din)
+   .din        ($din),
    .dout       ($dout),
    .data_valid ($data_valid)
 );
