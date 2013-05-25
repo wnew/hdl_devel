@@ -24,7 +24,6 @@ def multiplier_wrapper(block_name,
       #=============
       # Parameters
       #=============
-      ARCHITECTURE = "BEHAVIORAL",
       DATA_WIDTH_1 = 8,
       DATA_WIDTH_2 = 8
    ):
@@ -49,7 +48,6 @@ multiplier_wrapper.verilog_code = \
 """
 multiplier 
 #(
-   .ARCHITECTURE ("$ARCHITECTURE"),
    .DATA_WIDTH_1 ($DATA_WIDTH_1),
    .DATA_WIDTH_2 ($DATA_WIDTH_2)
 ) multiplier_$block_name (

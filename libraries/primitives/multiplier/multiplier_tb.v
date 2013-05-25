@@ -37,7 +37,6 @@ module multiplier_tb;
    // instance, "(d)esign (u)nder (t)est"
    //=====================================
    multiplier #(
-      .ARCHITECTURE (`ifdef ARCHITECTURE `ARCHITECTURE `else "BEHAVIORAL" `endif),
       .DATA_WIDTH_1 (`ifdef DATA_WIDTH_1 `DATA_WIDTH_1 `else 8            `endif),
       .DATA_WIDTH_2 (`ifdef DATA_WIDTH_2 `DATA_WIDTH_2 `else 8            `endif)
    ) dut (
@@ -65,16 +64,16 @@ module multiplier_tb;
    begin
       $dumpvars;
       clk = 0;
-      data1_i = 8'h3;
-      data2_i = 8'h2;
+      data1_i = 8'd34;
+      data2_i = 8'd22;
       #4
-      data2_i = 8'h9;
+      data2_i = 8'd9;
       #4
-      data1_i = 8'h9;
+      data1_i = 8'd9;
       #4
-      data1_i = 8'hFF;
+      data1_i = 8'd99;
       #4
-      data2_i = 8'hFF;
+      data2_i = 8'd99;
    end
 
    //====================

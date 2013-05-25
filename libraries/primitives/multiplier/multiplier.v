@@ -15,9 +15,8 @@ module multiplier #(
       //=============================
       // Top level block parameters
       //=============================
-      parameter ARCHITECTURE = "BEHAVIORAL", // BEHAVIORAL, VIRTEX5, VIRTEX6
-      parameter DATA_WIDTH_1 = 2,            // number of input bits (multiplier)
-      parameter DATA_WIDTH_2 = 2             // number of input bits (multiplicand)
+      parameter DATA_WIDTH_1 = 16,        // number of input bits (multiplier)
+      parameter DATA_WIDTH_2 = 16         // number of input bits (multiplicand)
    ) (
       //==============
       // Input Ports
@@ -30,32 +29,6 @@ module multiplier #(
       output [(DATA_WIDTH_1 + DATA_WIDTH_2) -1:0] data_o
    );
 
-   //=======================================
-   // Generate according to implementation
-   //=======================================
-   generate
-   	
-         case (ARCHITECTURE)
-            "BEHAVIORAL" :
-            begin
-               assign data_o = data1_i * data2_i;
-            end // case "BEHAVIORAL"
-      
-            "VIRTEX5" :
-            begin
-               // Instantiate V5 demux primitive
-            end
-      
-            "VIRTEX6" :
-            begin
-               // Instantiate V6 demux primitive
-            end
-      
-            default:
-            begin
-               // default
-            end
+   assign data_o = data1_i * data2_i;
 
-         endcase
-   endgenerate
 endmodule

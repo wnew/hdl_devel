@@ -5,7 +5,13 @@ This module is an asyncronous adder and requires no reset or enable ports.
 
 The adder module takes in 2 numbers, possibly with differing bit widths and
 adds them together. The output bit width is set to the highest input bit width
-+ 1. This effectively makes the highest bit of the output the carry bit.
++ 1. This effectively makes the highest bit of the output the carry bit. 
+
+Due to the nature of fractional numbers the adder can handle addition of 
+fractions, the designer is responsible for keeping track of the decimal point.
+
+There is possible bit growth of a single when doing addition, the max output
+will only be one bit longer then the longest input.
 
 
 Properties
