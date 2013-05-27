@@ -63,7 +63,8 @@ multiplier
 #=======================================
 def convert():
 
-   data1_i, data2_i, data_o = [Signal(bool(0)) for i in range(3)]
+   data1_i, data2_i = [Signal(intbv(0)[8:0]) for i in range(2)]
+   data_o = Signal(intbv(0)[8:0])
 
    toVerilog(multiplier_wrapper, block_name="inst", data1_i=data1_i, data2_i=data2_i, data_o=data_o)
 

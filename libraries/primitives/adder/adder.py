@@ -24,7 +24,6 @@ def adder_wrapper(block_name,
       #=============
       # Parameters
       #=============
-      ARCHITECTURE = "BEHAVIORAL",
       DATA_WIDTH_1 = 8,
       DATA_WIDTH_2 = 8
    ):
@@ -49,7 +48,6 @@ adder_wrapper.verilog_code = \
 """
 adder 
 #(
-   .ARCHITECTURE ("$ARCHITECTURE"),
    .DATA_WIDTH_1 ($DATA_WIDTH_1),
    .DATA_WIDTH_2 ($DATA_WIDTH_2)
 ) adder_$block_name (
@@ -65,9 +63,11 @@ adder
 #=======================================
 def convert():
 
-   data1_i, data2_i, data_o = [Signal(bool(0)) for i in range(3)]
+   data_width = 8
+   data1_i, data2_i = [Signal(intbv(0)[data_width:]) for i in range(2)]
+   data_o = Signal(intbv(0)[data_width+1:])
 
-   toVerilog(adder_wrapper, block_name="inst", data1_i=data1_i, data2_i=data2_i, data_o=data_o)
+   toVerilog(adder_wrapper, block_name="inst", data1_i=data1_i, data2_i=data2_i, data_o=data_o, DATA_WIDTH_1=data_width, DATA_WIDTH_2=data_width)
 
 
 if __name__ == "__main__":
