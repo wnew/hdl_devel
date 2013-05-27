@@ -17,6 +17,7 @@ def adder_wrapper(block_name,
       #========
       # Ports
       #========
+      clk,
       data1_i,
       data2_i,
       data_o,
@@ -51,6 +52,7 @@ adder
    .DATA_WIDTH_1 ($DATA_WIDTH_1),
    .DATA_WIDTH_2 ($DATA_WIDTH_2)
 ) adder_$block_name (
+   .clk      ($clk),
    .data1_i  ($data1_i),
    .data2_i  ($data2_i),
    .data_o   ($data_o)
@@ -64,10 +66,11 @@ adder
 def convert():
 
    data_width = 8
+   clk = Signal(bool(0))
    data1_i, data2_i = [Signal(intbv(0)[data_width:]) for i in range(2)]
    data_o = Signal(intbv(0)[data_width+1:])
 
-   toVerilog(adder_wrapper, block_name="inst", data1_i=data1_i, data2_i=data2_i, data_o=data_o, DATA_WIDTH_1=data_width, DATA_WIDTH_2=data_width)
+   toVerilog(adder_wrapper, block_name="inst", clk=clk, data1_i=data1_i, data2_i=data2_i, data_o=data_o, DATA_WIDTH_1=data_width, DATA_WIDTH_2=data_width)
 
 
 if __name__ == "__main__":

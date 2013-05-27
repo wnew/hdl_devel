@@ -26,7 +26,7 @@ module adder_tb;
    //=============
    // local regs
    //=============
-   reg clk;
+   reg                          clk;
    reg [LOCAL_DATA_WIDTH_1-1:0] data1_i;
    reg [LOCAL_DATA_WIDTH_2-1:0] data2_i;
    
@@ -46,6 +46,7 @@ module adder_tb;
       .DATA_WIDTH_1   (`ifdef DATA_WIDTH_1   `DATA_WIDTH_1   `else 16 `endif),
       .DATA_WIDTH_2   (`ifdef DATA_WIDTH_2   `DATA_WIDTH_2   `else 16 `endif)
    ) dut (
+      .clk     (clk),
       .data1_i (data1_i), 
       .data2_i (data2_i), 
       .data_o  (data_o)

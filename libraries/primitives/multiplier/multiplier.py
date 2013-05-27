@@ -17,6 +17,7 @@ def multiplier_wrapper(block_name,
       #========
       # Ports
       #========
+      clk,
       data1_i,
       data2_i,
       data_o,
@@ -51,6 +52,7 @@ multiplier
    .DATA_WIDTH_1 ($DATA_WIDTH_1),
    .DATA_WIDTH_2 ($DATA_WIDTH_2)
 ) multiplier_$block_name (
+   .clk      ($clk),
    .data1_i  ($data1_i),
    .data2_i  ($data2_i),
    .data_o   ($data_o)
@@ -63,10 +65,11 @@ multiplier
 #=======================================
 def convert():
 
+   clk = Signal(bool(0))
    data1_i, data2_i = [Signal(intbv(0)[8:0]) for i in range(2)]
-   data_o = Signal(intbv(0)[8:0])
+   data_o = Signal(intbv(0)[16:0])
 
-   toVerilog(multiplier_wrapper, block_name="inst", data1_i=data1_i, data2_i=data2_i, data_o=data_o)
+   toVerilog(multiplier_wrapper, block_name="inst", clk=clk, data1_i=data1_i, data2_i=data2_i, data_o=data_o)
 
 
 if __name__ == "__main__":

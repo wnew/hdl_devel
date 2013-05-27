@@ -21,14 +21,17 @@ module multiplier #(
       //==============
       // Input Ports
       //==============
-      input wire [DATA_WIDTH_1-1:0] data1_i,
-      input wire [DATA_WIDTH_2-1:0] data2_i,
+      input                    clk,
+      input [DATA_WIDTH_1-1:0] data1_i,
+      input [DATA_WIDTH_2-1:0] data2_i,
       //===============
       // Output Ports
       //===============
-      output [(DATA_WIDTH_1 + DATA_WIDTH_2) -1:0] data_o
+      output reg [(DATA_WIDTH_1 + DATA_WIDTH_2) -1:0] data_o
    );
 
-   assign data_o = data1_i * data2_i;
+   always @ (posedge clk) begin
+      data_o <= data1_i * data2_i;
+   end
 
 endmodule
