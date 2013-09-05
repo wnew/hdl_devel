@@ -13,83 +13,76 @@
 
 module fifo #(
       //=======================
-      //   fifo parameters
+      // fifo parameters
       //=======================
       parameter DATA_WIDTH = 16,
       parameter FIFO_DEPTH = 1024,
       parameter ADDR_BITS  = 10
    ) (
       //=======================
-      //   input ports
+      // input ports
       //=======================
       input                  wr_clk,
       input                  rd_clk,
       input                  en,
       input                  rst,
-      input wire             wr_req,
+      input                  wr_req,
       input                  rd_req,
       input [DATA_WIDTH-1:0] data_in,
       
       //=======================
-      //   output ports
+      // output ports
       //=======================
-      output     [DATA_WIDTH-1:0] data_out,
-      output                      perc_full,
+      output reg [DATA_WIDTH-1:0] data_out,
+      output                      almost_full,
       output                      full,
       output                      empty,
-      output reg [ADDR_BITS-1:0]  usedw
+      output     [ADDR_BITS-1:0]  usedw
    );
 
    
    //=======================
-   //   internal variables
+   // internal variables
    //=======================
    reg [DATA_WIDTH-1:0] mem [0:FIFO_DEPTH-1];
    reg [ADDR_BITS-1:0] 	rd_ptr;
    reg [ADDR_BITS-1:0] 	wr_ptr;
    
-//`ifdef rd_req
-   reg [DATA_WIDTH-1:0]    data_out;
-//`else
-   //wire [DATA_WIDTH-1:0]   data_out;
-//`endif
-   
    integer i;
    
-   always @(rst)
-      begin
-         wr_ptr <= #1 0;
-         rd_ptr <= #1 0;
-         for(i=0;i<FIFO_DEPTH;i=i+1)
-            mem[i] <= 0;
-     end
+   //=======================
+   // reset logic 
+   //=======================
+   always @(rst) begin
+      wr_ptr <= #1 0;
+      rd_ptr <= #1 0;
+      for(i=0;i<FIFO_DEPTH;i=i+1)
+         mem[i] <= 0;
+   end
    
-   always @(posedge wr_clk or posedge wr_req)
-      if (wr_req)
-         begin
-            wr_ptr <= wr_ptr+1;
-            mem[wr_ptr] <= data_in;
-         end
+   //=======================
+   // write logic 
+   //=======================
+   always @(posedge wr_clk or posedge wr_req) begin
+      if (en && wr_req) begin
+         wr_ptr <= wr_ptr+1;
+         mem[wr_ptr] <= data_in;
+      end
+   end
      
-   always @(posedge rd_clk)
-      if (rd_req)
-         begin
-            rd_ptr <= rd_ptr+1;
-//`ifdef rd_req
-            data_out <= mem[rd_ptr];
-//`endif
-         end
+   //=======================
+   // read logic 
+   //=======================
+   always @(posedge rd_clk) begin
+      if (en && rd_req) begin
+         rd_ptr <= rd_ptr+1;
+         data_out <= mem[rd_ptr];
+      end
+   end
    
-//`ifdef rd_req
-//`else
-//   assign data_out = mem[rdptr];
-//`endif
-   
-   // Fix these
-   //always @(posedge clk)
-   //   usedw <= wrptr - rdptr;
-   
-   //assign empty = (usedw == 0);
-   //assign full =  (usedw == FIFO_DEPTH-1);
+   assign usedw       = wr_ptr - rd_ptr;
+   assign empty       = usedw == 0;
+   assign full        = usedw == FIFO_DEPTH-1;
+   assign almost_full = usedw < FIFO_DEPTH-6;
    
 endmodule //fifo
