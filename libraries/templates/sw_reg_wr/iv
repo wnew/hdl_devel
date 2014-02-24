@@ -1,0 +1,6 @@
+clear
+iverilog sw_reg_wr.v sw_reg_wr_tb.v -o ./gen/sw_reg_wr.o
+mkdir gen
+cd gen
+./sw_reg_wr.o
+cd ..

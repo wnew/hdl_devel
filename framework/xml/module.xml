@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- This is a comment -->
+<module="module_x">
+   <name>module_x_inst</name>
+   <description>module_x does xyz...</description>
+   <parameter="DATA_WIDTH">
+      <default>32<default>
+      <description></description>
+   </parameter>
+   <input="clk">
+      <port_width>1</port_width>
+      <description></description>
+   </input>
+   <input"data_in">
+      <port_width>DATA_WIDTH</port_width>
+      <description></description>
+   </input>
+   <output="data_out">
+      <port_width>DATA_WIDTH</port_width>
+      <description></description>
+   </output>
+   <bus="wishbone">
+      <type>slave</type>
+   </bus>
+</module>
+

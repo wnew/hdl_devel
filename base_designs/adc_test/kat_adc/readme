@@ -1,0 +1,42 @@
+The KAT ADC consists of 3 modules, the kat_adc_interface is the main controller
+, it brings in the data from the ADC over the ZDOKs and presents it to the 
+user.
+
+The iic and spi controllers manage the configuration of the ADC, this is done
+over the ZDOK connectors, which provide the iic and spi interface to the ADC.
+These modules are connected ot the wishbone bus making them accessable from
+software.
+
+             |                  | 
+   ZDOK          FPGA Fabric      Fabric Interfaces
+             |  ______________  |
+               |              |  
+             | |              | |
+     Data in   |   KAT ADC    |  User data
+     --------|-|  Controller  |-|---------
+               |              |  
+             | |              | |
+               |______________|  
+             |                  |
+                                 
+             |  ______________  |
+               |              |  
+             | |              | |
+     IIC intr  |     IIC      |   Wishbone
+     --------|-|  Controller  |-|---------
+               |              |  
+             | |              | |
+               |______________|  
+             |                  |
+                                 
+             |  ______________  |
+               |              |  
+             | |              | |
+     SPI intr  |     SPI      |   Wishbone
+     --------|-|  Controller  |-|---------
+               |              |  
+             | |              | |
+               |______________|  
+             |                  |
+                                 
+             |                  |
