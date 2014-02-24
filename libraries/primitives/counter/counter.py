@@ -75,7 +75,8 @@ counter
 #=======================================
 def convert():
 
-   clk, en, rst, out = [Signal(bool(0)) for i in range(4)]
+   clk, en, rst = [Signal(bool(0)) for i in range(3)]
+   out = Signal(intbv(0)[8:])
 
    toVerilog(counter_wrapper, block_name="cntr2", clk=clk, en=en, rst=rst, out=out)
 

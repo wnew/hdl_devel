@@ -24,11 +24,11 @@ module fifo_tb;
       .rd_req  (rd_req),
       .data_in (data_in),
 
-      .data_out  (data_out),
-      .perc_full (perc_full),
-      .full      (full),
-      .empty     (empty),
-      .usedw     (usedw)
+      .data_out    (data_out),
+      .almost_full (almost_full),
+      .full        (full),
+      .empty       (empty),
+      .usedw       (usedw)
    );
 
    defparam dut.DATA_WIDTH = 32;
@@ -41,7 +41,7 @@ module fifo_tb;
          wr_clk = 0;
          rd_clk = 0;
          rst = 0;
-	      en = 1;
+	 en = 1;
          wr_req = 0;
          rd_req = 0;
          data_in = 32'b1010101010101;

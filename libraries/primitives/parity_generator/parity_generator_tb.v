@@ -1,49 +1,45 @@
 //============================================================================//
 //                                                                            //
-//      Multiplier test bench                                                 //
+//      Parity Generator test bench                                           //
 //                                                                            //
-//      Module name: multiplier_tb                                            //
-//      Desc: runs and tests the multiplier module, and provides and          //
+//      Module name: parity_generator_tb                                      //
+//      Desc: runs and tests the parity generator module, and provides and    //
 //            interface to test the module from Python (MyHDL)                //
-//      Date: April 2012                                                      //
+//      Date: Oct 2012                                                        //
 //      Developer: Wesley New                                                 //
 //      Licence: GNU General Public License ver 3                             //
-//      Notes: This only tests the basic functionality of the module, more    //
-//             comprehensive testing should be done in the python test file   //
+//      Notes:                                                                //
 //                                                                            //
 //============================================================================//
 
-module multiplier_tb;
+module parity_generator_tb;
 
    //===================
    // local parameters
    //===================
-   localparam LOCAL_DATA_WIDTH_1 = `ifdef DATA_WIDTH_1 `DATA_WIDTH_1 `else 8 `endif;
-   localparam LOCAL_DATA_WIDTH_2 = `ifdef DATA_WIDTH_2 `DATA_WIDTH_2 `else 8 `endif;
+   localparam LOCAL_DATA_WIDTH = `ifdef DATA_WIDTH  `DATA_WIDTH  `else 8 `endif;
+   localparam PARITY_TYPE      = `ifdef PARITY_TYPE `PARITY_TYPE `else 0 `endif;
 
    //=============
    // local regs
    //=============
-   reg                          clk;
-   reg [LOCAL_DATA_WIDTH_1-1:0] data1_i;
-   reg [LOCAL_DATA_WIDTH_2-1:0] data2_i;
+   reg                        clk;
+   reg [LOCAL_DATA_WIDTH-1:0] data_in;
    
    //==============
    // local wires
    //==============
-   wire [LOCAL_DATA_WIDTH_1+LOCAL_DATA_WIDTH_2-1:0] data_o;
+   wire parity_out;
 
    //=====================================
    // instance, "(d)esign (u)nder (t)est"
    //=====================================
-   multiplier #(
-      .DATA_WIDTH_1 (`ifdef DATA_WIDTH_1 `DATA_WIDTH_1 `else 8            `endif),
-      .DATA_WIDTH_2 (`ifdef DATA_WIDTH_2 `DATA_WIDTH_2 `else 8            `endif)
+   parity_generator #(
+      .DATA_WIDTH   (`ifdef DATA_WIDTH   `DATA_WIDTH   `else 8 `endif),
+      .PARITY_TYPE  (`ifdef PARITY_TYPE  `PARITY_TYPE  `else 0 `endif)
    ) dut (
-      .clk     (clk), 
-      .data1_i (data1_i), 
-      .data2_i (data2_i), 
-      .data_o  (data_o)
+      .data_in    (data_in),
+      .parity_out (parity_out)
    );
 
 //==============
@@ -53,8 +49,8 @@ module multiplier_tb;
    // define what myhdl takes over
    // only if we're running myhdl   
    initial begin
-      $from_myhdl(clk, data1_i, data2_i);
-      $to_myhdl(data_o);
+      $from_myhdl(clk, en, rst);
+      $to_myhdl(out);
    end
 `else
    
@@ -63,18 +59,10 @@ module multiplier_tb;
    //=============
    initial
    begin
-      $dumpvars;
-      clk = 0;
-      data1_i = 8'd34;
-      data2_i = 8'd22;
+      clk       = 0;
+      data_in   = 8'hFF;
       #4
-      data2_i = 8'd9;
-      #4
-      data1_i = 8'd9;
-      #4
-      data1_i = 8'd99;
-      #4
-      data2_i = 8'd99;
+      data_in   = 8'b01010100;
    end
 
    //====================
@@ -88,12 +76,16 @@ module multiplier_tb;
    //===============
    // print output
    //===============
-   always @(posedge clk) $display(data_o);
+   always @(posedge clk)
+   begin
+      //$display(count);
+      $display(parity_out);
+   end
    
    //===============================
    // finish after 100 clock cycles
    //===============================
-   initial #20 $finish;
+   initial #10 $finish;
 
 `endif
    
