@@ -1,0 +1,84 @@
+#! /usr/bin/vvp
+:ivl_version "0.9.2 " "(v0_9_2)";
+:vpi_time_precision + 0;
+:vpi_module "system";
+:vpi_module "v2005_math";
+:vpi_module "va_math";
+S_0x1104f20 .scope module, "edge_detect_tb" "edge_detect_tb" 2 16;
+ .timescale 0 0;
+P_0x1128dd8 .param/l "LOCAL_DATA_WIDTH" 2 21, C4<00001000>;
+P_0x1128e00 .param/str "LOCAL_EDGE_TYPE" 2 22, "RISE";
+v0x113bc20_0 .var "clk", 0 0;
+v0x113bcc0_0 .var "en", 0 0;
+v0x113bd70_0 .var "in", 7 0;
+v0x113be20_0 .net "out", 7 0, L_0x113bfc0; 1 drivers
+E_0x1105de0 .event negedge, v0x113b820_0;
+S_0x1105b80 .scope module, "dut" "edge_detect" 2 42, 3 16, S_0x1104f20;
+ .timescale 0 0;
+P_0x1128218 .param/l "DATA_WIDTH" 3 21, C4<00001000>;
+P_0x1128240 .param/str "EDGE_TYPE" 3 22, "RISE";
+L_0x113bf00 .functor NOT 8, v0x113b960_0, C4<00000000>, C4<00000000>, C4<00000000>;
+L_0x113bfc0 .functor AND 8, v0x113bd70_0, L_0x113bf00, C4<11111111>, C4<11111111>;
+v0x11044c0_0 .net *"_s0", 7 0, L_0x113bf00; 1 drivers
+v0x113b820_0 .net "clk", 0 0, v0x113bc20_0; 1 drivers
+v0x113b8c0_0 .var "delay_reg", 7 0;
+v0x113b960_0 .var "delay_reg1", 7 0;
+v0x113ba00_0 .net "en", 0 0, v0x113bcc0_0; 1 drivers
+v0x113baa0_0 .net "in", 7 0, v0x113bd70_0; 1 drivers
+v0x113bb80_0 .alias "pulse_out", 7 0, v0x113be20_0;
+E_0x1105010 .event posedge, v0x113b820_0;
+    .scope S_0x1105b80;
+T_0 ;
+    %wait E_0x1105010;
+    %load/v 8, v0x113baa0_0, 8;
+    %ix/load 0, 8, 0;
+    %assign/v0 v0x113b8c0_0, 0, 8;
+    %load/v 8, v0x113b8c0_0, 8;
+    %ix/load 0, 8, 0;
+    %assign/v0 v0x113b960_0, 0, 8;
+    %jmp T_0;
+    .thread T_0;
+    .scope S_0x1104f20;
+T_1 ;
+    %vpi_call 2 55 "$dumpvars";
+    %set/v v0x113bc20_0, 0, 1;
+    %set/v v0x113bcc0_0, 1, 1;
+    %movi 8, 170, 8;
+    %set/v v0x113bd70_0, 8, 8;
+    %delay 5, 0;
+    %movi 8, 85, 8;
+    %set/v v0x113bd70_0, 8, 8;
+    %delay 5, 0;
+    %movi 8, 240, 8;
+    %set/v v0x113bd70_0, 8, 8;
+    %delay 5, 0;
+    %movi 8, 15, 8;
+    %set/v v0x113bd70_0, 8, 8;
+    %end;
+    .thread T_1;
+    .scope S_0x1104f20;
+T_2 ;
+    %delay 1, 0;
+    %load/v 8, v0x113bc20_0, 1;
+    %inv 8, 1;
+    %set/v v0x113bc20_0, 8, 1;
+    %jmp T_2;
+    .thread T_2;
+    .scope S_0x1104f20;
+T_3 ;
+    %wait E_0x1105de0;
+    %vpi_call 2 78 "$display", v0x113be20_0;
+    %jmp T_3;
+    .thread T_3;
+    .scope S_0x1104f20;
+T_4 ;
+    %delay 20, 0;
+    %vpi_call 2 83 "$finish";
+    %end;
+    .thread T_4;
+# The file index is used to find the file name in the following table.
+:file_names 4;
+    "N/A";
+    "<interactive>";
+    "edge_detect_tb.v";
+    "edge_detect.v";

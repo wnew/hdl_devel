@@ -1,0 +1,3 @@
+clear
+iverilog wb_test.v sys_block/sys_block.v sw_reg_wr/sw_reg_wr.v
+./a.out

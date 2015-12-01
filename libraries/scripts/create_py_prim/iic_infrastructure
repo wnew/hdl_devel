@@ -1,0 +1,13 @@
+iic_infrastructure
+
+params
+
+ports
+sda_i
+sda_o
+sda_t
+scl_i
+scl_o
+scl_t
+sda
+scl

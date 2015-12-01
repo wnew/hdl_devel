@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<design>
+   <config>
+      <hw_plat></hw_plat>
+      <fpga></fpga>
+      <reset>ACTIVE_HIGH</reset>
+      <clk></clk>
+         <layers>
+            <layer1>clocks</layer1>
+            <layer2>busses</layer2>
+            <layer3>control</layer3>
+            <layer4>dsp</layer4>
+            <layer5>simulation</layer5>
+         </layers>
+   </congif>
+   <module>
+      <lib_name>counter</lib_name>
+      <module_name>counter</module_name>
+      <layout>
+         <pos_x></pos_x>
+         <pos_y></pos_y>
+         <width></width>
+         <height></height>
+      </layout>
+      <ports>
+         <in_port>
+            <port_name>clk</port_name>
+            <port_width>xx</port_width>
+            <port_layer>xx<port_layer>
+         </in_port> 
+         <out_port>data_out</out_port>
+      </ports>
+      <params>
+         <parameter>DATA_WIDTH</parameter>
+      </params>
+   </module>
+   <wire>
+      <from_port></from_port>
+      <to_port></to_port>
+   </wire>
+   <wire_group>
+      <width></width>
+      <from_port></from_port>
+      <to_port></to_port>
+   </wire_group>
+</design>
+
+
+
+
+

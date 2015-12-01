@@ -1,0 +1,326 @@
+$date
+	Mon Jul  9 09:19:04 2012
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1s
+$end
+$scope module sw_reg_r_tb $end
+$var wire 1 ! wbs_ack_o $end
+$var wire 32 " wbs_dat_o [31:0] $end
+$var wire 1 # wbs_int_o $end
+$var reg 1 $ fabric_clk_i $end
+$var reg 32 % fabric_data_i [31:0] $end
+$var reg 1 & wb_clk_i $end
+$var reg 1 ' wb_rst_i $end
+$var reg 8 ( wbs_adr_i [7:0] $end
+$var reg 1 ) wbs_cyc_i $end
+$var reg 32 * wbs_dat_i [31:0] $end
+$var reg 4 + wbs_sel_i [3:0] $end
+$var reg 1 , wbs_stb_i $end
+$var reg 1 - wbs_we_i $end
+$scope module dut $end
+$var wire 1 . adr_match $end
+$var wire 1 / fabric_clk_i $end
+$var wire 32 0 fabric_data_i [31:0] $end
+$var wire 1 1 wb_clk_i $end
+$var wire 1 2 wb_rst_i $end
+$var wire 8 3 wbs_adr_i [7:0] $end
+$var wire 1 4 wbs_cyc_i $end
+$var wire 32 5 wbs_dat_i [31:0] $end
+$var wire 4 6 wbs_sel_i [3:0] $end
+$var wire 1 7 wbs_stb_i $end
+$var wire 1 8 wbs_we_i $end
+$var reg 32 9 fabric_data_i_reg [31:0] $end
+$var reg 32 : reg_buf [31:0] $end
+$var reg 1 ; register_ready $end
+$var reg 1 < register_readyR $end
+$var reg 1 = register_readyRR $end
+$var reg 1 > register_request $end
+$var reg 1 ? register_requestR $end
+$var reg 1 @ register_requestRR $end
+$var reg 1 A wbs_ack_o $end
+$var reg 32 B wbs_dat_o [31:0] $end
+$var reg 32 C wbs_dat_o_reg [31:0] $end
+$var reg 1 D wbs_err_o $end
+$var reg 1 E wbs_int_o $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+xE
+xD
+bx C
+bx B
+xA
+x@
+x?
+x>
+x=
+x<
+x;
+b0 :
+bx 9
+x8
+x7
+bx 6
+bx 5
+x4
+bx 3
+x2
+x1
+b11101110111011101110111011101110 0
+0/
+x.
+x-
+x,
+bx +
+bx *
+x)
+bx (
+x'
+x&
+b11101110111011101110111011101110 %
+0$
+x#
+bx "
+x!
+$end
+#1
+1$
+1/
+#2
+0$
+0/
+#3
+1$
+1/
+#4
+0$
+0/
+#5
+0>
+0E
+0#
+0D
+0A
+0!
+1.
+1$
+1/
+b0 (
+b0 3
+0-
+08
+0)
+04
+0,
+07
+b1010 +
+b1010 6
+1'
+12
+1&
+11
+#6
+0$
+0/
+0&
+01
+#7
+0?
+bz B
+bz "
+1$
+1/
+1&
+11
+0'
+02
+#8
+0$
+0/
+0&
+01
+#9
+0@
+1$
+1/
+1&
+11
+#10
+0$
+0/
+0&
+01
+#11
+0;
+1$
+1/
+1&
+11
+#12
+0$
+0/
+0&
+01
+#13
+0<
+1$
+1/
+1&
+11
+#14
+0$
+0/
+0&
+01
+#15
+0=
+1$
+1/
+1&
+11
+#16
+0$
+0/
+0&
+01
+#17
+1>
+1$
+1/
+1&
+11
+#18
+0$
+0/
+0&
+01
+#19
+1?
+1$
+1/
+1&
+11
+#20
+0$
+0/
+0&
+01
+#21
+1@
+1$
+1/
+1&
+11
+#22
+0$
+0/
+0&
+01
+#23
+1;
+b11101110111011101110111011101110 9
+1$
+1/
+1&
+11
+#24
+0$
+0/
+0&
+01
+#25
+1<
+1$
+1/
+1&
+11
+#26
+0$
+0/
+0&
+01
+#27
+1=
+1$
+1/
+1&
+11
+#28
+0$
+0/
+0&
+01
+#29
+b11101110111011101110111011101110 :
+0>
+1$
+1/
+1&
+11
+#30
+0$
+0/
+0&
+01
+#31
+0?
+1$
+1/
+1&
+11
+#32
+0$
+0/
+0&
+01
+1)
+14
+1,
+17
+#33
+0@
+1A
+1!
+b11101110111011101110111011101110 C
+bx B
+bx "
+1$
+1/
+1&
+11
+#34
+0$
+0/
+0&
+01
+#35
+0;
+b11101110111011101110111011101110 B
+b11101110111011101110111011101110 "
+1$
+1/
+1&
+11
+#36
+0$
+0/
+0&
+01
+#37
+0A
+0!
+0<
+bz B
+bz "
+1$
+1/
+1&
+11
+0,
+07

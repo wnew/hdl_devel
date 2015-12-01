@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<design name="counter_leds">
+   <config>
+      <hw_plat></hw_plat>
+      <fpga></fpga>
+      <clk></clk>
+   </config>
+   <module>
+      <lib_name>counter</lib_name>
+      <module_name>counter</module_name>
+      <layout>
+         <pos_x></pos_x>
+         <pos_y></pos_y>
+         <width></width>
+         <height></height>
+      </layout>
+      <in_port>
+         <port_name>clk</port_name>
+         <port_width>xx</port_width>
+      </in_port> 
+      <out_port>data_out</out_port>
+      <bus>
+         <bus_name>wb_slave</bus_name>
+         <bus_type>wb_slave</bus_type>
+      </bus>
+      <param>
+         <parameter_name>DATA_WIDTH</parameter_name>
+         <parameter_type></parameter_type>
+      </param>
+   </module>
+   <wire>
+      <from_port></from_port>
+      <to_port></to_port>
+   </wire>
+   <wire_group>
+      <width></width>
+      <from_port></from_port>
+      <to_port></to_port>
+   </wire_group>
+</design>
+
+
+
+
+

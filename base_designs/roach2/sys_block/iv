@@ -1,0 +1,5 @@
+clear
+iverilog sys_block.v sys_block_tb.v -o ./gen/sys_block.o
+cd gen
+./sys_block.o
+cd ..

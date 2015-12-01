@@ -1,0 +1,2 @@
+iverilog -o sw_reg_r_sim.o sw_reg_r_tb.v sw_reg_r.v
+./sw_reg_r_sim.o

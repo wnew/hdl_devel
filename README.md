@@ -2,9 +2,9 @@ Casper Toolflow Development Libraries
 =====================================
 
 The [CASPER](http://casper.berkeley.edu) open-source astronomy 
-instrumentation group is moving away from the Matlab/Simulink 
-hardware design environment and towards a cheaper, friendly, 
-and more stable Python/Verilog based approach. 
+instrumentation group is looking into alternatives to the 
+the Matlab/Simulink hardware design environment, based on the 
+Python/Verilog MyHDL approach.
 
 Installation
 ============
